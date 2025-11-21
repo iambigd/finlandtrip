@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Montserrat:wght@200;300;400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-paper: #fdfbf7;
+    --color-ink: #111111;
+    --color-accent: #d4af37;
+    --color-fin-blue: #003580;
+    --color-midnight: #1a202c;
+  }
+
+  body {
+    @apply bg-[#fdfbf7] text-[#111111] overflow-x-hidden;
+    scroll-behavior: smooth;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  h3 {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  h4 {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  p {
+    font-family: 'Cormorant Garamond', serif;
+  }
+}
+
+@layer components {
+  /* Dual Title (中英文双标题) */
+  .dual-title-zh {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 0.5em;
+    display: block;
+    margin-top: 0.2em;
+    letter-spacing: 0.1em;
+    color: #777;
+  }
+
+  /* Drop Cap (首字下沉) */
+  .drop-cap::first-letter {
+    float: left;
+    font-size: 4.5rem;
+    line-height: 0.85;
+    font-weight: 600;
+    margin-right: 0.75rem;
+    font-family: 'Cormorant Garamond', serif;
+    color: #111;
+  }
+
+  /* Aurora Glow Animation */
+  .aurora-glow {
+    animation: glow 10s infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 5px #fff, 0 0 10px #34d399, 0 0 15px #3b82f6;
+    }
+    to {
+      text-shadow: 0 0 8px #fff, 0 0 12px #10b981, 0 0 18px #2563eb;
+    }
+  }
+
+  /* Travel Icon Styles */
+  .travel-icon {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    z-index: 20;
+    pointer-events: none;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.4));
+    transition: opacity 0.3s;
+    opacity: 0;
+  }
+
+  .travel-icon > svg,
+  .travel-icon > i {
+    font-size: 16px;
+    display: block;
+  }
+
+  /* Modal Star Rating */
+  .star-rating {
+    direction: rtl;
+    display: inline-block;
+  }
+
+  .star-rating input[type='radio'] {
+    display: none;
+  }
+
+  .star-rating label {
+    color: #bbb;
+    font-size: 20px;
+    padding: 0 2px;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+  }
+
+  .star-rating input[type='radio']:checked ~ label {
+    color: #d4af37;
+  }
+
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: #d4af37;
+  }
+
+  /* Display Stars */
+  .display-rating {
+    font-size: 16px;
+    color: #d4af37;
+    cursor: pointer;
+  }
+
+  .display-rating-arctic {
+    font-size: 16px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  /* Texture Overlay */
+  .texture-overlay {
+    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+    opacity: 0.4;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .font-sans {
+    font-family: 'Montserrat', sans-serif;
+  }
+}

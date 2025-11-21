@@ -1,0 +1,145 @@
+import { useState, useEffect } from 'react';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+import { TipConfig } from '../App';
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface TipData {
+  [key: string]: TipConfig | ((name?: string) => TipConfig);
+}
+
+const TonttuTip = () => {
+  const [showTip, setShowTip] = useState(false);
+  const [tipTitle, setTipTitle] = useState('Tonttu 精靈');
+  const [currentTip, setCurrentTip] = useState('');
+
+  const tips: TipData = {
+    cover: { title: '歡迎!', text: '點擊「旅程地圖」按鈕，開始您的極地之旅。' },
+    prep: { title: '行前準備', text: '別忘了下載 HSL App！它讓您在市區購票輕鬆許多。' },
+    city: { title: '市區探索', text: '即使塔林在申根區內，別忘了攜帶護照，偶爾會有檢查。' },
+    arctic: { title: '極光提醒', text: '極光攝影：將相機（或手機）的曝光時間拉長，才能捕捉到極光！' },
+    food: { title: '購物筆記', text: 'Fazer 巧克力在機場免稅店通常最便宜，記得比價喔！' },
+    'rating-success': (name?: string) => ({
+      title: '評分成功！',
+      text: `您對「${name}」的評分已成功記錄。`,
+    }),
+    default: { title: 'Tonttu 精靈', text: '想知道這個版塊的秘訣嗎？滾動頁面，我來幫您！' },
+  };
+
+  const setTip = (key: string, name?: string) => {
+    const tip =
+      typeof tips[key] === 'function'
+        ? (tips[key] as (name?: string) => TipConfig)(name)
+        : (tips[key] as TipConfig) || tips.default;
+
+    setShowTip(false);
+    setTimeout(() => {
+      setTipTitle(tip.title);
+      setCurrentTip(tip.text);
+      setShowTip(true);
+    }, 100);
+
+    // Auto-hide for certain tips
+    if (key === 'default' || key.startsWith('check') || key === 'rating-success') {
+      setTimeout(() => {
+        setShowTip(false);
+      }, 6000);
+    }
+  };
+
+  const nextTip = () => {
+    setTip('default');
+  };
+
+  useEffect(() => {
+    // Initialize with cover tip
+    setTip('cover');
+
+    // Setup ScrollTriggers for different sections
+    const sections = ['prep', 'city', 'arctic', 'food'];
+
+    sections.forEach((id) => {
+      ScrollTrigger.create({
+        trigger: `#${id}`,
+        start: 'top 60%',
+        end: 'bottom 40%',
+        onEnter: () => setTip(id),
+        onEnterBack: () => setTip(id),
+      });
+    });
+
+    // Listen for custom events (for checklist and rating success)
+    const handleChecklistTip = (event: CustomEvent) => {
+      setTipTitle('Tonttu 精靈鼓勵您!');
+      setCurrentTip(event.detail.tip);
+      setShowTip(false);
+      setTimeout(() => setShowTip(true), 100);
+      setTimeout(() => setShowTip(false), 5000);
+    };
+
+    const handleRatingSuccess = (event: CustomEvent) => {
+      setTip('rating-success', event.detail.name);
+    };
+
+    window.addEventListener('tonttu:checklist-tip', handleChecklistTip as EventListener);
+    window.addEventListener('tonttu:rating-success', handleRatingSuccess as EventListener);
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      window.removeEventListener('tonttu:checklist-tip', handleChecklistTip as EventListener);
+      window.removeEventListener('tonttu:rating-success', handleRatingSuccess as EventListener);
+    };
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      {/* Speech Bubble */}
+      {showTip && (
+        <div className="speech-bubble mb-3 max-w-[220px] transition-all duration-300 ease-out transform">
+          <div className="bg-white p-4 rounded-lg shadow-xl border-2 border-[#003580]">
+            <p className="text-[10px] font-sans font-bold text-[#003580] tracking-widest mb-1">
+              {tipTitle}
+            </p>
+            <p className="text-xs font-serif text-gray-700 italic leading-relaxed">
+              {currentTip}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Tonttu Character */}
+      <div
+        className="w-16 h-16 cursor-pointer hover:scale-105 transition-transform duration-300 relative group"
+        onClick={nextTip}
+      >
+        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
+          {/* Face */}
+          <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
+          {/* Eyes */}
+          <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
+          <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
+          {/* Smile */}
+          <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
+          {/* Blush */}
+          <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+          <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+          {/* Santa Hat */}
+          <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
+          <circle cx="50" cy="6" r="8" fill="#fff" />
+          {/* Collar */}
+          <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
+        </svg>
+
+        {/* Alert Badge */}
+        {!showTip && (
+          <div className="absolute -top-1 -right-1 bg-[#d4af37] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
+            !
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default TonttuTip;

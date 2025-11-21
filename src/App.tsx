@@ -1,0 +1,168 @@
+import { useState, useEffect } from 'react';
+import Navigation from './components/Navigation';
+import TonttuTip from './components/TonttuTip';
+import CoverSection from './components/CoverSection';
+import MapSection from './components/MapSection';
+import PrepSection from './components/PrepSection';
+import CitySection from './components/CitySection';
+import ArcticSection from './components/ArcticSection';
+import FoodSection from './components/FoodSection';
+import Footer from './components/Footer';
+import RatingModal from './components/RatingModal';
+import ViewingModal from './components/ViewingModal';
+
+export interface Comment {
+  id: number;
+  author: string;
+  text: string;
+  rating: number;
+  date: number;
+}
+
+export interface TipConfig {
+  title: string;
+  text: string;
+}
+
+function App() {
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [isViewingModalOpen, setIsViewingModalOpen] = useState(false);
+  const [currentPoiId, setCurrentPoiId] = useState<string | null>(null);
+  const [currentPoiName, setCurrentPoiName] = useState('');
+  const [activeMapLocation, setActiveMapLocation] = useState('helsinki');
+
+  // Rating Modal Functions
+  const openRatingModal = (id: string, name: string) => {
+    setCurrentPoiId(id);
+    setCurrentPoiName(name);
+    setIsRatingModalOpen(true);
+  };
+
+  const openViewingModal = (id: string, name: string) => {
+    setCurrentPoiId(id);
+    setCurrentPoiName(name);
+    setIsViewingModalOpen(true);
+  };
+
+  const closeRatingModal = () => {
+    setIsRatingModalOpen(false);
+  };
+
+  const closeViewingModal = () => {
+    setIsViewingModalOpen(false);
+  };
+
+  // Utility Functions for Comments
+  const loadComments = (poiId: string): Comment[] => {
+    const stored = localStorage.getItem(`comments_${poiId}`);
+    return stored ? JSON.parse(stored) : [];
+  };
+
+  const saveComments = (poiId: string, comments: Comment[]) => {
+    localStorage.setItem(`comments_${poiId}`, JSON.stringify(comments));
+  };
+
+  const getAverageRating = (poiId: string, round: boolean = false): number => {
+    const comments = loadComments(poiId);
+    if (comments.length === 0) return 0;
+    const total = comments.reduce((sum, c) => sum + c.rating, 0);
+    const average = total / comments.length;
+    return round ? Math.round(average * 2) / 2 : parseFloat(average.toFixed(1));
+  };
+
+  const renderStars = (rating: number): string => {
+    if (rating === 0) return '☆☆☆☆☆';
+    let fullStars = Math.floor(rating);
+    let halfStar = rating % 1 >= 0.25 && rating % 1 < 0.75 ? 1 : 0;
+    let result = '★'.repeat(fullStars) + (halfStar ? '½' : '');
+    result += '☆'.repeat(5 - fullStars - halfStar);
+    return result;
+  };
+
+  // Prevent scroll when modal is open
+  useEffect(() => {
+    if (isRatingModalOpen || isViewingModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isRatingModalOpen, isViewingModalOpen]);
+
+  return (
+    <div className="relative">
+      {/* Texture Overlay */}
+      <div className="texture-overlay fixed inset-0 z-40 pointer-events-none" />
+
+      {/* Tonttu Tip System */}
+      <TonttuTip />
+
+      {/* Navigation */}
+      <Navigation />
+
+      {/* Main Content */}
+      <main>
+        <CoverSection />
+        
+        <MapSection 
+          activeMapLocation={activeMapLocation}
+          setActiveMapLocation={setActiveMapLocation}
+        />
+        
+        <PrepSection />
+        
+        <CitySection
+          openRatingModal={openRatingModal}
+          openViewingModal={openViewingModal}
+          getAverageRating={getAverageRating}
+          renderStars={renderStars}
+        />
+        
+        <ArcticSection
+          openRatingModal={openRatingModal}
+          openViewingModal={openViewingModal}
+          getAverageRating={getAverageRating}
+          renderStars={renderStars}
+        />
+        
+        <FoodSection
+          openRatingModal={openRatingModal}
+          openViewingModal={openViewingModal}
+          getAverageRating={getAverageRating}
+          renderStars={renderStars}
+        />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Modals */}
+      {currentPoiId && (
+        <>
+          <RatingModal
+            isOpen={isRatingModalOpen}
+            onClose={closeRatingModal}
+            poiId={currentPoiId}
+            poiName={currentPoiName}
+            loadComments={loadComments}
+            saveComments={saveComments}
+          />
+          
+          <ViewingModal
+            isOpen={isViewingModalOpen}
+            onClose={closeViewingModal}
+            poiId={currentPoiId}
+            poiName={currentPoiName}
+            loadComments={loadComments}
+            getAverageRating={getAverageRating}
+            renderStars={renderStars}
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
