@@ -7,13 +7,15 @@ import CoverSection from './components/CoverSection';
 import MapSection from './components/MapSection';
 import CitySection from './components/CitySection';
 import ArcticSection from './components/ArcticSection';
-import FoodSection from './components/FoodSection';
+import SaunaSection from './components/SaunaSection';
+import FoodPreview from './components/FoodPreview';
 import Footer from './components/Footer';
 import RatingModal from './components/RatingModal';
 import ViewingModal from './components/ViewingModal';
 import PreparationDrawer from './components/PreparationDrawer';
 import TaxRefundDrawer from './components/TaxRefundDrawer';
 import EmergencyDrawer from './components/EmergencyDrawer';
+import FoodDrawer from './components/FoodDrawer';
 
 export interface Comment {
   id: number;
@@ -43,6 +45,7 @@ function App() {
   const [isPreparationOpen, setIsPreparationOpen] = useState(false);
   const [isTaxRefundOpen, setIsTaxRefundOpen] = useState(false);
   const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
+  const [isFoodOpen, setIsFoodOpen] = useState(false);
 
   // Rating Modal Functions
   const openRatingModal = (id: string, name: string) => {
@@ -117,6 +120,7 @@ function App() {
         onOpenPreparation={() => setIsPreparationOpen(true)}
         onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
         onOpenEmergency={() => setIsEmergencyOpen(true)}
+        onOpenFood={() => setIsFoodOpen(true)}
       />
 
       {/* Mobile Navigation */}
@@ -124,12 +128,14 @@ function App() {
         onOpenPreparation={() => setIsPreparationOpen(true)}
         onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
         onOpenEmergency={() => setIsEmergencyOpen(true)}
+        onOpenFood={() => setIsFoodOpen(true)}
       />
 
       {/* Mobile Tab Bar */}
       <MobileTabBar
         onOpenEmergency={() => setIsEmergencyOpen(true)}
         onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
+        onOpenFood={() => setIsFoodOpen(true)}
       />
 
       {/* Main Content */}
@@ -159,12 +165,15 @@ function App() {
           renderStars={renderStars}
         />
         
-        <FoodSection
+        <SaunaSection
           openRatingModal={openRatingModal}
           openViewingModal={openViewingModal}
           getAverageRating={getAverageRating}
           renderStars={renderStars}
-          loadComments={loadComments}
+        />
+        
+        <FoodPreview 
+          onOpenFoodDrawer={() => setIsFoodOpen(true)}
         />
       </main>
 
@@ -185,6 +194,16 @@ function App() {
       <EmergencyDrawer
         isOpen={isEmergencyOpen}
         onClose={() => setIsEmergencyOpen(false)}
+      />
+      
+      <FoodDrawer
+        isOpen={isFoodOpen}
+        onClose={() => setIsFoodOpen(false)}
+        openRatingModal={openRatingModal}
+        openViewingModal={openViewingModal}
+        getAverageRating={getAverageRating}
+        renderStars={renderStars}
+        loadComments={loadComments}
       />
 
       {/* Modals */}

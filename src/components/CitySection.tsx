@@ -38,16 +38,16 @@ const CitySection = ({
     console.log('🏛️ CitySection: selectedCity 更新為', selectedCity, '(來源:', externalSelectedCity !== undefined ? '外部' : '內部', ')');
   }, [selectedCity, externalSelectedCity]);
 
-  // 標籤顏色配置（與 FoodSection 一致的風格）
+  // 標籤顏色配置（統一使用同一種藍色）
   const tagStyles: Record<string, string> = {
-    '必訪': 'bg-red-500 text-white',
-    '拍照景點': 'bg-pink-500 text-white',
-    '世界遺產': 'bg-purple-600 text-white',
-    '設計朝聖': 'bg-blue-600 text-white',
-    '美食': 'bg-orange-500 text-white',
-    '當地體驗': 'bg-green-500 text-white',
-    '中世紀': 'bg-amber-700 text-white',
-    '海港': 'bg-cyan-500 text-white',
+    '必訪': 'bg-blue-100 text-blue-700',
+    '拍照景點': 'bg-blue-100 text-blue-700',
+    '世界遺產': 'bg-blue-100 text-blue-700',
+    '設計朝聖': 'bg-blue-100 text-blue-700',
+    '美食': 'bg-blue-100 text-blue-700',
+    '當地體驗': 'bg-blue-100 text-blue-700',
+    '中世紀': 'bg-blue-100 text-blue-700',
+    '海港': 'bg-blue-100 text-blue-700',
   };
 
   // 類型篩選器選項
@@ -157,29 +157,6 @@ const CitySection = ({
           </div>
         </div>
 
-        {/* 類型篩選器 */}
-        <div className="mb-12 p-6 bg-gray-50 rounded-lg border border-gray-200">
-          <h3 className="font-sans text-sm uppercase tracking-wider text-gray-600 mb-4">
-            篩選類型
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            {typeFilterOptions.map(option => (
-              <button
-                key={option.value}
-                onClick={() => setTypeFilter(option.value)}
-                className={`px-4 py-2 rounded-lg border-2 transition-all font-sans ${
-                  typeFilter === option.value
-                    ? 'bg-[#003580] text-white border-transparent'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                <span className="mr-2">{option.emoji}</span>
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* 景點列表 - 按日期分組 */}
         {sortedDays.length === 0 ? (
           <div className="text-center py-20">
@@ -240,12 +217,12 @@ const CitySection = ({
                           <div className="md:col-span-3 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               {/* 標題 */}
-                              <h4 className="text-3xl font-serif mb-2 leading-tight">
+                              <h4 className="text-3xl font-serif mb-1 leading-tight">
                                 {poi.name}
-                                <span className="dual-title-zh text-base ml-3">
-                                  {poi.nameZh}
-                                </span>
                               </h4>
+                              <h5 className="text-xl mb-2 leading-tight text-[#777]">
+                                {poi.nameZh}
+                              </h5>
 
                               {/* 副標題 */}
                               <p className="text-sm text-[#003580] font-sans uppercase tracking-wider mb-4">

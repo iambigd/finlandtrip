@@ -5,9 +5,10 @@ interface NavigationProps {
   onOpenPreparation: () => void;
   onOpenTaxRefund: () => void;
   onOpenEmergency: () => void;
+  onOpenFood: () => void;
 }
 
-const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency }: NavigationProps) => {
+const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpenFood }: NavigationProps) => {
   const [isPlanningOpen, setIsPlanningOpen] = useState(false);
 
   return (
@@ -33,7 +34,7 @@ const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency }: Nav
           onMouseLeave={() => setIsPlanningOpen(false)}
         >
           <button className="flex items-center hover:text-[#d4af37] transition">
-            📋 旅行規劃
+            旅行規劃
             <ChevronDown className={`w-3 h-3 ml-1 transition-transform ${isPlanningOpen ? 'rotate-180' : ''}`} />
           </button>
           
@@ -76,9 +77,12 @@ const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency }: Nav
           北極圈體驗
         </a>
 
-        <a href="#food" className="hover:text-[#d4af37] transition">
-          美食
-        </a>
+        <button 
+          onClick={onOpenFood}
+          className="hover:text-[#d4af37] transition"
+        >
+          美食與伴手禮
+        </button>
 
         {/* 緊急聯絡按鈕 - 紅色強調 */}
         <button

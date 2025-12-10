@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { X } from 'lucide-react';
 import { TipConfig } from '../App';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -54,6 +55,10 @@ const TonttuTip = () => {
     setTip('default');
   };
 
+  const closeTip = () => {
+    setShowTip(false);
+  };
+
   useEffect(() => {
     // Initialize with cover tip
     setTip('cover');
@@ -95,15 +100,24 @@ const TonttuTip = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end md:bottom-6 md:right-6 bottom-20 right-4">
       {/* Speech Bubble */}
       {showTip && (
-        <div className="speech-bubble mb-3 max-w-[220px] transition-all duration-300 ease-out transform">
-          <div className="bg-white p-4 rounded-lg shadow-xl border-2 border-[#003580]">
-            <p className="text-[10px] font-sans font-bold text-[#003580] tracking-widest mb-1">
+        <div className="speech-bubble mb-3 max-w-[220px] md:max-w-[220px] max-w-[180px] transition-all duration-300 ease-out transform">
+          <div className="bg-white p-4 md:p-4 p-3 rounded-lg shadow-xl border-2 border-[#003580] relative">
+            {/* Close Button */}
+            <button
+              onClick={closeTip}
+              className="absolute -top-2 -right-2 bg-[#003580] text-white rounded-full w-5 h-5 md:w-5 md:h-5 w-4 h-4 flex items-center justify-center hover:bg-[#002a66] transition shadow-md"
+              aria-label="關閉提示"
+            >
+              <X className="w-3 h-3 md:w-3 md:h-3 w-2 h-2" />
+            </button>
+            
+            <p className="text-[10px] md:text-[10px] text-[9px] font-sans font-bold text-[#003580] tracking-widest mb-1">
               {tipTitle}
             </p>
-            <p className="text-xs font-serif text-gray-700 italic leading-relaxed">
+            <p className="text-xs md:text-xs text-[11px] font-serif text-gray-700 italic leading-relaxed">
               {currentTip}
             </p>
           </div>
@@ -112,7 +126,7 @@ const TonttuTip = () => {
 
       {/* Tonttu Character */}
       <div
-        className="w-16 h-16 cursor-pointer hover:scale-105 transition-transform duration-300 relative group"
+        className="w-16 h-16 md:w-16 md:h-16 w-12 h-12 cursor-pointer hover:scale-105 transition-transform duration-300 relative group"
         onClick={nextTip}
       >
         <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">

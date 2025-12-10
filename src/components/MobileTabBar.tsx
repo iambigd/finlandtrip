@@ -1,11 +1,12 @@
-import { Home, MapPin, AlertCircle, Receipt } from 'lucide-react';
+import { Home, MapPin, AlertCircle, Receipt, UtensilsCrossed } from 'lucide-react';
 
 interface MobileTabBarProps {
   onOpenEmergency: () => void;
   onOpenTaxRefund: () => void;
+  onOpenFood: () => void;
 }
 
-const MobileTabBar = ({ onOpenEmergency, onOpenTaxRefund }: MobileTabBarProps) => {
+const MobileTabBar = ({ onOpenEmergency, onOpenTaxRefund, onOpenFood }: MobileTabBarProps) => {
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -19,13 +20,13 @@ const MobileTabBar = ({ onOpenEmergency, onOpenTaxRefund }: MobileTabBarProps) =
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-2xl">
-      <div className="grid grid-cols-4 h-16">
+      <div className="grid grid-cols-5 h-16">
         {/* Home */}
         <button
           onClick={handleScrollToTop}
           className="flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition active:bg-gray-100"
         >
-          <Home className="w-5 h-5 text-gray-700" />
+          <Home className="w-5 h-5 text-[#003580]" />
           <span className="text-[10px] font-sans text-gray-600">Home</span>
         </button>
 
@@ -34,17 +35,17 @@ const MobileTabBar = ({ onOpenEmergency, onOpenTaxRefund }: MobileTabBarProps) =
           onClick={handleScrollToCity}
           className="flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition active:bg-gray-100"
         >
-          <MapPin className="w-5 h-5 text-blue-600" />
-          <span className="text-[10px] font-sans text-gray-600">城市</span>
+          <MapPin className="w-5 h-5 text-[#003580]" />
+          <span className="text-[10px] font-sans text-gray-600">City</span>
         </button>
 
-        {/* Emergency */}
+        {/* Food */}
         <button
-          onClick={onOpenEmergency}
-          className="flex flex-col items-center justify-center gap-1 hover:bg-red-50 transition active:bg-red-100"
+          onClick={onOpenFood}
+          className="flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition active:bg-gray-100"
         >
-          <AlertCircle className="w-5 h-5 text-red-600" />
-          <span className="text-[10px] font-sans text-red-600">緊急</span>
+          <UtensilsCrossed className="w-5 h-5 text-[#003580]" />
+          <span className="text-[10px] font-sans text-gray-600">Food</span>
         </button>
 
         {/* Tax Refund */}
@@ -52,8 +53,17 @@ const MobileTabBar = ({ onOpenEmergency, onOpenTaxRefund }: MobileTabBarProps) =
           onClick={onOpenTaxRefund}
           className="flex flex-col items-center justify-center gap-1 hover:bg-gray-50 transition active:bg-gray-100"
         >
-          <Receipt className="w-5 h-5 text-amber-600" />
-          <span className="text-[10px] font-sans text-gray-600">退稅</span>
+          <Receipt className="w-5 h-5 text-[#003580]" />
+          <span className="text-[10px] font-sans text-gray-600">Tax</span>
+        </button>
+
+        {/* Emergency - 紅色顯眼 */}
+        <button
+          onClick={onOpenEmergency}
+          className="flex flex-col items-center justify-center gap-1 hover:bg-red-50 transition active:bg-red-100"
+        >
+          <AlertCircle className="w-6 h-6 text-red-600" />
+          <span className="text-[10px] font-sans text-red-600 font-bold">SOS</span>
         </button>
       </div>
     </div>

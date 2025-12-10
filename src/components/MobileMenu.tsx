@@ -5,9 +5,10 @@ interface MobileMenuProps {
   onOpenPreparation: () => void;
   onOpenTaxRefund: () => void;
   onOpenEmergency: () => void;
+  onOpenFood: () => void;
 }
 
-const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency }: MobileMenuProps) => {
+const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpenFood }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlanningExpanded, setIsPlanningExpanded] = useState(false);
 
@@ -144,14 +145,13 @@ const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency }: Mob
                 <div className="text-xs text-gray-500">Arctic Experience</div>
               </a>
 
-              <a
-                href="#food"
-                onClick={() => handleLinkClick('#food')}
-                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
+              <button
+                onClick={() => handleDrawerOpen(onOpenFood)}
+                className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
               >
                 <div className="font-sans text-sm">美食與伴手禮</div>
                 <div className="text-xs text-gray-500">Food & Souvenirs</div>
-              </a>
+              </button>
 
               {/* 緊急聯絡 - 紅色強調 */}
               <button
