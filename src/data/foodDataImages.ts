@@ -3,7 +3,7 @@ export const foodImages: Record<string, string> = {
   'flame-grilled-salmon': 'https://images.unsplash.com/photo-1720514091975-a322721f0dc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncmlsbGVkJTIwc2FsbW9uJTIwZmlyZXxlbnwxfHx8fDE3NjQ3NTY0OTl8MA&ixlib=rb-4.1.0&q=80&w=1080',
   'poronkaristys': 'https://images.unsplash.com/photo-1668887465493-c4b0351aea89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWluZGVlciUyMG1lYXQlMjBkaXNofGVufDF8fHx8MTc2NDc1NjQ5OXww&ixlib=rb-4.1.0&q=80&w=1080',
   'lohikeitto': 'https://images.unsplash.com/photo-1675870793073-70306dbc541f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYWxtb24lMjBzb3VwJTIwZmlubmlzaHxlbnwxfHx8fDE3NjQ3NTY1MDB8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  'karjalanpiirakka': 'https://images.unsplash.com/photo-1626622635386-dc4f7beaecdf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrYXJqYWxhbnBpaXJha2thJTIwZmlubmlzaHxlbnwxfHx8fDE3NjQ3NTY1MDB8MA&ixlib=rb-4.1.0&q=80&w=1080',
+  'karjalanpiirakka': 'https://images.unsplash.com/photo-1692641278263-19447a412550?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5uaXNoJTIwcnllJTIwcGFzdHJ5fGVufDF8fHx8MTc2NTM3NzUzMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
   'korvapuusti': 'https://images.unsplash.com/photo-1694632288834-17d86b340745?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaW5uYW1vbiUyMGJ1biUyMHBhc3RyeXxlbnwxfHx8fDE3NjQ2NzM2MTV8MA&ixlib=rb-4.1.0&q=80&w=1080',
   'fazer-chocolate': 'https://images.unsplash.com/photo-1672990705466-6939196346dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXplciUyMGJsdWUlMjBjaG9jb2xhdGV8ZW58MXx8fHwxNzY0NzU2NTAxfDA&ixlib=rb-4.1.0&q=80&w=1080',
   'salmiakki': 'https://images.unsplash.com/photo-1631172948140-f57fecb49aa0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYWxtaWFra2klMjBjYW5keSUyMGJsYWNrfGVufDF8fHx8MTc2NDc1NjUwMXww&ixlib=rb-4.1.0&q=80&w=1080',
@@ -36,7 +36,7 @@ export const foodImages: Record<string, string> = {
 };
 
 export const souvenirImages: Record<string, string> = {
-  'marimekko': 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=800',
+  'marimekko': 'https://images.unsplash.com/photo-1749367288395-f874bb54bc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5uaXNoJTIwdGV4dGlsZSUyMGRlc2lnbnxlbnwxfHx8fDE3NjUzNzY4NzB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
   'moomin': 'https://images.unsplash.com/photo-1712664436326-96dcd9fc7e34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29taW4lMjBtdWd8ZW58MXx8fHwxNzY0NjcxMTAxfDA&ixlib=rb-4.1.0&q=80&w=1080',
   'kuksa': 'https://images.unsplash.com/photo-1706195546953-f3ac8d384a24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b29kZW4lMjBjdXAlMjBsYXBsYW5kfGVufDF8fHx8MTc2NDc1NjUxNnww&ixlib=rb-4.1.0&q=80&w=1080',
   'iittala': 'https://images.unsplash.com/photo-1618441079655-28413f13113d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpaXR0YWxhJTIwZ2xhc3MlMjB2YXNlfGVufDF8fHx8MTc2NDc1NjUxN3ww&ixlib=rb-4.1.0&q=80&w=1080',

@@ -1,4 +1,5 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import Slider from 'react-slick';
 
 interface ArcticSectionProps {
   openRatingModal: (id: string, name: string) => void;
@@ -13,6 +14,52 @@ const ArcticSection = ({
   getAverageRating,
   renderStars,
 }: ArcticSectionProps) => {
+  // Carousel settings
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    pauseOnHover: true,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
+  // Arctic activities data
+  const arcticActivities = [
+    {
+      id: 'ice-karting',
+      title: 'Ice Karting',
+      titleZh: '冰上卡丁車',
+      description: '體驗在結冰的湖面上高速漂移的極限運動！',
+      image: 'https://images.unsplash.com/photo-1651467538765-bb1367c6a8b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aW50ZXIlMjBrYXJ0aW5nJTIwc25vdyUyMHRyYWNrfGVufDF8fHx8MTc2NTM3NzkwMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
+    {
+      id: 'husky-sledding',
+      title: 'Husky Sledding',
+      titleZh: '哈士奇雪橇',
+      description: '坐上哈士奇雪橇，感受在雪地森林中奔馳的快感。',
+      image: 'https://images.unsplash.com/photo-1672085270147-14cb8c790df7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxodXNreSUyMHNsZWRkaW5nJTIwd2ludGVyfGVufDF8fHx8MTc2MzcxOTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+    },
+    {
+      id: 'horse-riding',
+      title: 'Horse Riding',
+      titleZh: '雪地騎馬',
+      description: '在白雪覆蓋的森林中騎馬漫步，享受寧靜的北歐風光。',
+      image: 'https://images.unsplash.com/photo-1737995719884-6005421a419d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3JzZSUyMHJpZGluZyUyMHNub3clMjB3aW50ZXIlMjBmaW5sYW5kfGVufDF8fHx8MTc2NTM3ODQwNnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
+  ];
+
   return (
     <section id="arctic" className="py-24 bg-[#1a202c] text-[#fdfbf7] relative overflow-hidden">
       <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
@@ -85,8 +132,8 @@ const ArcticSection = ({
         </div>
 
         {/* Arctic Activities */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-t border-white/10">
-          <div className="md:col-span-1 text-center">
+        <div className="py-10 border-t border-white/10">
+          <div className="text-center mb-8">
             <span className="text-[#d4af37] font-sans text-xs tracking-widest block mb-2">
               12月22-24日 • 列維
             </span>
@@ -96,67 +143,46 @@ const ArcticSection = ({
             </h4>
             <p className="text-gray-500 text-sm mt-2">速度、毛皮與極光追逐。</p>
           </div>
-          <div className="bg-white/10 p-6">
-            <ImageWithFallback
-              src="https://images.unsplash.com/photo-1709882370936-ebacc8d08cd7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpY2UlMjBrYXJ0aW5nJTIwc25vd3xlbnwxfHx8fDE3NjM3MTk0MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080"
-              alt="Ice Karting"
-              className="w-full h-32 object-cover opacity-80"
-            />
-            <h5 className="text-xl font-serif italic text-[#d4af37] mt-4 mb-2">
-              Ice Karting <span className="dual-title-zh text-xs text-gray-400">冰上卡丁車</span>
-            </h5>
-            <p className="text-sm text-gray-300">
-              體驗在結冰的湖面上高速漂移的極限運動！
-            </p>
-            <div className="flex items-center space-x-4 mt-4 border-t border-white/20 pt-3">
-              <span
-                className="display-rating-arctic"
-                onClick={() => openViewingModal('ice-karting', '冰上卡丁車')}
-              >
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: renderStars(getAverageRating('ice-karting', true)),
-                  }}
-                />
-              </span>
-              <button
-                onClick={() => openRatingModal('ice-karting', '冰上卡丁車')}
-                className="bg-[#d4af37] text-[#111] text-xs px-3 py-1 rounded transition"
-              >
-                留下評分
-              </button>
-            </div>
-          </div>
-          <div className="bg-white/10 p-6">
-            <ImageWithFallback
-              src="https://images.unsplash.com/photo-1672085270147-14cb8c790df7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxodXNreSUyMHNsZWRkaW5nJTIwd2ludGVyfGVufDF8fHx8MTc2MzcxOTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080"
-              alt="Husky Sledding"
-              className="w-full h-32 object-cover opacity-80"
-            />
-            <h5 className="text-xl font-serif italic text-[#d4af37] mt-4 mb-2">
-              Husky Sledding <span className="dual-title-zh text-xs text-gray-400">哈士奇雪橇</span>
-            </h5>
-            <p className="text-sm text-gray-300">
-              坐上哈士奇雪橇，感受在雪地森林中奔馳的快感。
-            </p>
-            <div className="flex items-center space-x-4 mt-4 border-t border-white/20 pt-3">
-              <span
-                className="display-rating-arctic"
-                onClick={() => openViewingModal('husky-sledding', '哈士奇雪橇')}
-              >
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: renderStars(getAverageRating('husky-sledding', true)),
-                  }}
-                />
-              </span>
-              <button
-                onClick={() => openRatingModal('husky-sledding', '哈士奇雪橇')}
-                className="bg-[#d4af37] text-[#111] text-xs px-3 py-1 rounded transition"
-              >
-                留下評分
-              </button>
-            </div>
+          
+          <div className="max-w-6xl mx-auto px-16">
+            <Slider {...sliderSettings}>
+              {arcticActivities.map((activity) => (
+                <div key={activity.id} className="px-2">
+                  <div className="bg-white/10 p-6 mx-2">
+                    <ImageWithFallback
+                      src={activity.image}
+                      alt={activity.title}
+                      className="w-full h-48 object-cover opacity-80 rounded mb-4"
+                    />
+                    <h5 className="text-xl font-serif italic text-[#d4af37] mb-2">
+                      {activity.title}{' '}
+                      <span className="dual-title-zh text-xs text-gray-400">{activity.titleZh}</span>
+                    </h5>
+                    <p className="text-sm text-gray-300 mb-4">
+                      {activity.description}
+                    </p>
+                    <div className="flex items-center space-x-4 border-t border-white/20 pt-3">
+                      <span
+                        className="display-rating-arctic cursor-pointer"
+                        onClick={() => openViewingModal(activity.id, activity.titleZh)}
+                      >
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: renderStars(getAverageRating(activity.id, true)),
+                          }}
+                        />
+                      </span>
+                      <button
+                        onClick={() => openRatingModal(activity.id, activity.titleZh)}
+                        className="bg-[#d4af37] text-[#111] text-xs px-3 py-1 rounded transition hover:bg-[#c5a028]"
+                      >
+                        留下評分
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
           </div>
         </div>
 
