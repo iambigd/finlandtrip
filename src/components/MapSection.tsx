@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
 import { CityFilterType } from '../App';
+import { WeatherCarousel } from './WeatherCarousel';
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -297,39 +298,12 @@ const MapSection = ({ activeMapLocation, setActiveMapLocation, setSelectedCityFi
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12 items-start">
-        {/* 左側：城市區塊列表 */}
-        <div className="space-y-3">
-          {cityBlocks.map((city) => (
-            <div
-              key={city.id}
-              onClick={() => handleCityClick(city.id, city.linkTo)}
-              className={`
-                ${city.colorClass}
-                bg-slate-900/10
-                hover:bg-slate-800/20
-                ${selectedCity === city.id ? 'bg-slate-700/30 shadow-lg' : ''}
-                p-6 cursor-pointer transition-all duration-300
-                border-t border-b border-white/10
-              `}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="text-2xl font-serif text-[#003580]">
-                    {city.name}
-                    <span className="text-sm font-sans text-gray-500 ml-2">{city.nameEn}</span>
-                  </h3>
-                  <p className="text-xs font-sans uppercase text-gray-500 mt-1">{city.days}</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-700 mt-3">{city.description}</p>
-              <button
-                onClick={() => handleCityClick(city.id, city.linkTo)}
-                className="inline-block mt-4 text-sm text-[#d4af37] hover:text-[#003580] transition-colors font-sans cursor-pointer"
-              >
-                閱讀該章節 →
-              </button>
-            </div>
-          ))}
+        {/* 左側：天氣輪播系統 */}
+        <div className="lg:sticky lg:top-24">
+          <div className="bg-slate-900/50 backdrop-blur-md 
+            rounded-2xl p-8 shadow-2xl border border-white/10 min-h-[600px]">
+            <WeatherCarousel />
+          </div>
         </div>
 
         {/* 右側：地圖 + 動畫 */}

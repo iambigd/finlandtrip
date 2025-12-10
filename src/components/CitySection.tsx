@@ -1,347 +1,148 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useState } from 'react';
+import { CityCard } from './CityCard';
+import { CityDrawer } from './CityDrawer';
+import { cityData, CityPOI } from '../data/cityData';
 import { Comment } from '../App';
-import { cityData, CityPOI, cityTips } from '../data/cityData';
-import { cityImages } from '../data/cityDataImages';
-import { MapPin, Calendar, Info } from 'lucide-react';
 
 interface CitySectionProps {
-  openRatingModal: (id: string, name: string) => void;
-  openViewingModal: (id: string, name: string) => void;
-  getAverageRating: (poiId: string, round: boolean) => number;
-  renderStars: (rating: number) => string;
   loadComments: (poiId: string) => Comment[];
-  selectedCity?: CityPOI['city'] | 'all';
-  setSelectedCity?: (city: CityPOI['city'] | 'all') => void;
+  saveComments: (poiId: string, comments: Comment[]) => void;
+  getAverageRating: (poiId: string) => string;
+  openRatingModal: (poiId: string, poiName: string) => void;
 }
 
-type TypeFilter = 'all' | CityPOI['type'];
-
-const CitySection = ({
-  openRatingModal,
-  openViewingModal,
-  getAverageRating,
-  renderStars,
+export const CitySection: React.FC<CitySectionProps> = ({
   loadComments,
-  selectedCity: externalSelectedCity,
-  setSelectedCity: externalSetSelectedCity,
-}: CitySectionProps) => {
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
-  const [internalSelectedCity, setInternalSelectedCity] = useState<CityPOI['city'] | 'all'>('all');
-  
-  // 使用外部 state（如果有提供），否則使用內部 state
-  const selectedCity = externalSelectedCity !== undefined ? externalSelectedCity : internalSelectedCity;
-  const setSelectedCity = externalSetSelectedCity || setInternalSelectedCity;
+  saveComments,
+  getAverageRating,
+  openRatingModal,
+}) => {
+  const [selectedCity, setSelectedCity] = useState<CityPOI['city'] | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // 調試：監聽 selectedCity 變化
-  useEffect(() => {
-    console.log('🏛️ CitySection: selectedCity 更新為', selectedCity, '(來源:', externalSelectedCity !== undefined ? '外部' : '內部', ')');
-  }, [selectedCity, externalSelectedCity]);
-
-  // 標籤顏色配置（統一使用同一種藍色）
-  const tagStyles: Record<string, string> = {
-    '必訪': 'bg-blue-100 text-blue-700',
-    '拍照景點': 'bg-blue-100 text-blue-700',
-    '世界遺產': 'bg-blue-100 text-blue-700',
-    '設計朝聖': 'bg-blue-100 text-blue-700',
-    '美食': 'bg-blue-100 text-blue-700',
-    '當地體驗': 'bg-blue-100 text-blue-700',
-    '中世紀': 'bg-blue-100 text-blue-700',
-    '海港': 'bg-blue-100 text-blue-700',
-  };
-
-  // 類型篩選器選項
-  const typeFilterOptions: { value: TypeFilter; label: string; emoji: string }[] = [
-    { value: 'all', label: '全部景點', emoji: '🗺️' },
-    { value: 'attraction', label: '景點', emoji: '🏛️' },
-    { value: 'museum', label: '博物館', emoji: '🎨' },
-    { value: 'restaurant', label: '餐廳', emoji: '🍽️' },
-    { value: 'shopping', label: '購物', emoji: '🛍️' },
-    { value: 'nature', label: '自然', emoji: '🌳' },
-    { value: 'transport', label: '交通', emoji: '🚂' },
+  // 城市配置
+  const cities: Array<{
+    id: CityPOI['city'];
+    nameZh: string;
+    image: string;
+  }> = [
+    {
+      id: 'helsinki',
+      nameZh: '赫爾辛基',
+      image: 'https://images.unsplash.com/photo-1651608979499-94f24adacdb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZWxzaW5raSUyMGNhdGhlZHJhbCUyMHdpbnRlcnxlbnwxfHx8fDE3NjUzNDU4NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
+    {
+      id: 'tallinn',
+      nameZh: '塔林',
+      image: 'https://images.unsplash.com/photo-1551086054-1bc97d3466ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0YWxsaW5uJTIwb2xkJTIwdG93bnxlbnwxfHx8fDE3NjUzNDU4NTB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
+    {
+      id: 'porvoo',
+      nameZh: '波爾沃',
+      image: 'https://images.unsplash.com/photo-1611706537648-754e851083b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3J2b28lMjBjb2xvcmZ1bCUyMGhvdXNlc3xlbnwxfHx8fDE3NjUzODU1NjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
+    {
+      id: 'suomenlinna',
+      nameZh: '芬蘭堡',
+      image: 'https://images.unsplash.com/photo-1688105168409-6f7bfa1d2cad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW9tZW5saW5uYSUyMGZvcnRyZXNzfGVufDF8fHx8MTc2NTM4NTU2MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
   ];
 
-  // 城市篩選器選項
-  const cityFilterOptions: { value: CityPOI['city'] | 'all'; label: string; color: string }[] = [
-    { value: 'all', label: '所有城市', color: 'bg-gray-500' },
-    { value: 'helsinki', label: '赫爾辛基', color: 'bg-blue-500' },
-    { value: 'tallinn', label: '塔林', color: 'bg-amber-500' },
-    { value: 'porvoo', label: '波爾沃', color: 'bg-rose-500' },
-    { value: 'suomenlinna', label: '芬蘭堡', color: 'bg-indigo-500' },
-  ];
-
-  // 渲染標籤
-  const renderTags = (tags: string[]) => {
-    return (
-      <div className="flex flex-wrap gap-2 mb-3">
-        {tags.map((tag, idx) => (
-          <span
-            key={idx}
-            className={`text-xs px-2 py-1 rounded ${tagStyles[tag] || 'bg-gray-500 text-white'}`}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-    );
+  // 获取每个城市的 POI
+  const getCityPOIs = (cityId: CityPOI['city']) => {
+    return cityData.filter((poi) => poi.city === cityId);
   };
 
-  // 篩選資料
-  const filteredData = useMemo(() => {
-    return cityData.filter(poi => {
-      const typeMatch = typeFilter === 'all' || poi.type === typeFilter;
-      const cityMatch = selectedCity === 'all' || poi.city === selectedCity;
-      return typeMatch && cityMatch;
-    });
-  }, [typeFilter, selectedCity]);
+  // 获取每个城市的亮点 POI（必访标签）
+  const getHighlightPOIs = (cityId: CityPOI['city']) => {
+    return cityData
+      .filter((poi) => poi.city === cityId && poi.tags.includes('必訪'))
+      .slice(0, 5);
+  };
 
-  // 按日期分組
-  const groupedByDay = useMemo(() => {
-    const groups: Record<number, CityPOI[]> = {};
-    filteredData.forEach(poi => {
-      if (!groups[poi.dayNumber]) {
-        groups[poi.dayNumber] = [];
-      }
-      groups[poi.dayNumber].push(poi);
-    });
-    return groups;
-  }, [filteredData]);
+  // 打开抽屉
+  const handleCityClick = (cityId: CityPOI['city']) => {
+    setSelectedCity(cityId);
+    setIsDrawerOpen(true);
+  };
 
-  const sortedDays = Object.keys(groupedByDay)
-    .map(Number)
-    .sort((a, b) => a - b);
-
-  // 獲取城市對應的邊框顏色
-  const getCityBorderColor = (city: CityPOI['city']): string => {
-    const colorMap: Record<CityPOI['city'], string> = {
-      helsinki: 'border-blue-400',
-      tallinn: 'border-amber-400',
-      porvoo: 'border-rose-400',
-      suomenlinna: 'border-indigo-400',
-    };
-    return colorMap[city];
+  // 关闭抽屉
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setTimeout(() => setSelectedCity(null), 300);
   };
 
   return (
-    <section id="city" className="py-24 bg-white relative z-10">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Section Header */}
-        <div className="mb-16 border-b border-gray-200 pb-6">
-          <h2 className="text-6xl font-serif italic text-[#111] mb-3">
-            City Exploration
-            <span className="dual-title-zh text-lg uppercase text-gray-600 ml-4">
-              城市探索
-            </span>
+    <section id="city" className="py-24 bg-[#fdfbf7] relative overflow-hidden">
+      {/* 裝飾性背景元素 */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-100/30 rounded-full blur-3xl" />
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        {/* 标题 */}
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-serif text-[#003580] italic mb-4">
+            City Explorer
+            <span className="dual-title-zh text-sm uppercase text-gray-500">城市探索</span>
           </h2>
-          <p className="font-serif text-lg text-gray-600 mt-4">
-            從赫爾辛基的設計之都到塔林的中世紀舊城，探索北歐與波羅的海的城市魅力
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            四座獨特的城市，每一處都有屬於自己的故事。從現代設計之都赫爾辛基，到中世紀童話小鎮塔林，
+            探索北歐的多元魅力。
           </p>
         </div>
 
-        {/* 城市篩選器 */}
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-3">
-            {cityFilterOptions.map(option => (
-              <button
-                key={option.value}
-                onClick={() => setSelectedCity(option.value)}
-                className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                  selectedCity === option.value
-                    ? `${option.color} text-white border-transparent`
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* 景點列表 - 按日期分組 */}
-        {sortedDays.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="font-serif text-gray-500 text-xl">
-              沒有符合條件的景點
-            </p>
-          </div>
-        ) : (
-          sortedDays.map(dayNumber => {
-            const pois = groupedByDay[dayNumber];
-            const firstPoi = pois[0];
-
+        {/* 城市卡片 - 幾何拼貼排版 */}
+        <div className="grid grid-cols-12 gap-4 auto-rows-[200px]">
+          {cities.map((city, index) => {
+            const pois = getCityPOIs(city.id);
+            const highlights = getHighlightPOIs(city.id);
+            
+            // 幾何拼貼佈局配置
+            const layouts = [
+              'col-span-12 md:col-span-7 row-span-2',  // 赫爾辛基 - 大
+              'col-span-12 md:col-span-5 row-span-2',  // 塔林 - 中
+              'col-span-12 md:col-span-6 row-span-2',  // 波爾沃 - 中
+              'col-span-12 md:col-span-6 row-span-2',  // 芬蘭堡 - 中
+            ];
+            
             return (
-              <div key={dayNumber} className="mb-16">
-                {/* 日期標題 */}
-                <div className={`flex items-center mb-8 pb-4 border-l-4 pl-6 ${getCityBorderColor(firstPoi.city)}`}>
-                  <Calendar className="w-6 h-6 text-gray-600 mr-3" />
-                  <div>
-                    <h3 className="text-3xl font-serif">
-                      {firstPoi.date}
-                      <span className="text-base text-gray-500 ml-3 font-sans">
-                        Day {dayNumber}
-                      </span>
-                    </h3>
-                    <p className="text-sm text-gray-600 font-sans mt-1">
-                      {firstPoi.cityZh} • {pois.length} 個景點
-                    </p>
-                  </div>
-                </div>
-
-                {/* 景點卡片 */}
-                <div className="space-y-8">
-                  {pois.map(poi => {
-                    const avgRating = getAverageRating(poi.id, true);
-                    const comments = loadComments(poi.id);
-                    const imageUrl = cityImages[poi.id];
-
-                    return (
-                      <div
-                        key={poi.id}
-                        className={`group bg-white border-l-4 ${getCityBorderColor(poi.city)} shadow-sm hover:shadow-xl transition-all duration-300`}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
-                          {/* 左側圖片 */}
-                          <div className="md:col-span-2 relative overflow-hidden h-[300px] md:h-auto">
-                            <ImageWithFallback
-                              src={imageUrl}
-                              alt={poi.nameZh}
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                            />
-                            {/* 類型標籤 */}
-                            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-sans">
-                              {poi.typeZh}
-                            </div>
-                          </div>
-
-                          {/* 右側內容 */}
-                          <div className="md:col-span-3 p-6 md:p-8 flex flex-col justify-between">
-                            <div>
-                              {/* 標題 */}
-                              <h4 className="text-3xl font-serif mb-1 leading-tight">
-                                {poi.name}
-                              </h4>
-                              <h5 className="text-xl mb-2 leading-tight text-[#777]">
-                                {poi.nameZh}
-                              </h5>
-
-                              {/* 副標題 */}
-                              <p className="text-sm text-[#003580] font-sans uppercase tracking-wider mb-4">
-                                {poi.subtitle}
-                              </p>
-
-                              {/* 標籤 */}
-                              {renderTags(poi.tags)}
-
-                              {/* 描述 */}
-                              <p className="font-serif text-gray-700 leading-relaxed mb-4">
-                                {poi.description}
-                              </p>
-
-                              {/* Tonttu 提示 */}
-                              {poi.tips && (
-                                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded">
-                                  <div className="flex items-start">
-                                    <Info className="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                                    <p className="text-sm font-serif text-blue-900 italic">
-                                      <span className="font-sans font-bold mr-1">Tonttu 秘訣:</span>
-                                      {poi.tips}
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* 位置資訊 */}
-                              {poi.location && (
-                                <div className="flex items-start text-xs text-gray-500 font-sans mb-4">
-                                  <MapPin className="w-3 h-3 mr-1 mt-0.5" />
-                                  <span>{poi.location}</span>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* 評分區域 */}
-                            <div className="border-t pt-4 mt-4">
-                              <h5 className="text-sm font-sans font-bold text-[#003580] mb-3">
-                                旅伴回憶
-                              </h5>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4">
-                                  <div className="flex items-center">
-                                    <span className="text-xs font-sans mr-2">推薦評分:</span>
-                                    <span
-                                      className="display-rating cursor-pointer text-lg"
-                                      onClick={() => openViewingModal(poi.id, poi.nameZh)}
-                                    >
-                                      <span
-                                        dangerouslySetInnerHTML={{
-                                          __html: renderStars(avgRating),
-                                        }}
-                                      />
-                                    </span>
-                                  </div>
-                                  {comments.length > 0 && (
-                                    <span className="text-xs text-gray-500 font-sans">
-                                      ({comments.length} 則評論)
-                                    </span>
-                                  )}
-                                </div>
-                                <button
-                                  onClick={() => openRatingModal(poi.id, poi.nameZh)}
-                                  className="bg-[#003580] text-white text-xs font-sans px-4 py-2 rounded hover:bg-[#003580]/90 transition"
-                                >
-                                  留下評分
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div key={city.id} className={layouts[index]}>
+                <CityCard
+                  city={city.id}
+                  cityZh={city.nameZh}
+                  image={city.image}
+                  poiCount={pois.length}
+                  highlightPOIs={highlights}
+                  onClick={() => handleCityClick(city.id)}
+                />
               </div>
             );
-          })
-        )}
+          })}
+        </div>
 
-        {/* 城市秘訣區塊 */}
-        {selectedCity !== 'all' && (
-          <div className="mt-16 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
-            <h3 className="text-2xl font-serif mb-6 flex items-center">
-              <div className="w-8 h-8 mr-3 flex-shrink-0">
-                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
-                  {/* Face */}
-                  <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
-                  {/* Eyes */}
-                  <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
-                  <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
-                  {/* Smile */}
-                  <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
-                  {/* Blush */}
-                  <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
-                  <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
-                  {/* Santa Hat */}
-                  <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
-                  <circle cx="50" cy="6" r="8" fill="#fff" />
-                  {/* Collar */}
-                  <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
-                </svg>
-              </div>
-              Tonttu 的 {cityFilterOptions.find(c => c.value === selectedCity)?.label} 秘訣
-            </h3>
-            <ul className="space-y-3">
-              {cityTips
-                .find(ct => ct.city === selectedCity)
-                ?.tips.map((tip, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="text-blue-600 mr-3 text-lg">•</span>
-                    <span className="font-serif text-gray-800">{tip}</span>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        )}
+        {/* 提示文字 */}
+        <div className="text-center mt-12">
+          <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
+            <span>💡</span>
+            <span>點擊城市卡片查看該城市所有景點與詳細資訊</span>
+          </p>
+        </div>
       </div>
+
+      {/* 城市抽屉 */}
+      {selectedCity && (
+        <CityDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleCloseDrawer}
+          cityName={cities.find((c) => c.id === selectedCity)?.id || ''}
+          cityNameZh={cities.find((c) => c.id === selectedCity)?.nameZh || ''}
+          pois={getCityPOIs(selectedCity)}
+          loadComments={loadComments}
+          saveComments={saveComments}
+          getAverageRating={getAverageRating}
+          onRatingClick={openRatingModal}
+        />
+      )}
     </section>
   );
 };

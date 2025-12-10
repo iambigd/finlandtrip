@@ -78,12 +78,12 @@ function App() {
     localStorage.setItem(`comments_${poiId}`, JSON.stringify(comments));
   };
 
-  const getAverageRating = (poiId: string, round: boolean = false): number => {
+  const getAverageRating = (poiId: string, round: boolean = false): string => {
     const comments = loadComments(poiId);
-    if (comments.length === 0) return 0;
+    if (comments.length === 0) return '0.0';
     const total = comments.reduce((sum, c) => sum + c.rating, 0);
     const average = total / comments.length;
-    return round ? Math.round(average * 2) / 2 : parseFloat(average.toFixed(1));
+    return round ? (Math.round(average * 2) / 2).toFixed(1) : average.toFixed(1);
   };
 
   const renderStars = (rating: number): string => {
@@ -148,14 +148,11 @@ function App() {
           setSelectedCityFilter={setSelectedCityFilter}
         />
         
-        <CitySection
-          openRatingModal={openRatingModal}
-          openViewingModal={openViewingModal}
-          getAverageRating={getAverageRating}
-          renderStars={renderStars}
+        <CitySection 
           loadComments={loadComments}
-          selectedCity={selectedCityFilter}
-          setSelectedCity={setSelectedCityFilter}
+          saveComments={saveComments}
+          getAverageRating={getAverageRating}
+          openRatingModal={openRatingModal}
         />
         
         <ArcticSection

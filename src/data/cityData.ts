@@ -13,6 +13,7 @@ export interface CityPOI {
   description: string;
   tips?: string; // Tonttu 的專屬小提示
   location?: string; // 具體位置或交通資訊
+  image?: string; // 景點縮圖
 }
 
 const createCityPOI = (
@@ -29,7 +30,8 @@ const createCityPOI = (
   subtitle: string,
   description: string,
   tips?: string,
-  location?: string
+  location?: string,
+  image?: string
 ): CityPOI => ({
   id,
   name,
@@ -45,11 +47,12 @@ const createCityPOI = (
   description,
   tips,
   location,
+  image,
 });
 
 export const cityData: CityPOI[] = [
   // ==============================
-  // 赫爾辛基 Helsinki (Day 1-3, 12, 15)
+  // 赫爾辛基 Helsinki (Day 1, 2, 7, 8, 11, 13, 14)
   // ==============================
   
   // Day 1 - 12月19日
@@ -123,11 +126,286 @@ export const cityData: CityPOI[] = [
 
   // Day 2 - 12月20日
   createCityPOI(
+    'oodi-library',
+    'Oodi Central Library',
+    'Oodi 頌歌圖書館',
+    '12月20日',
+    2,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['必訪', '設計朝聖', '拍照景點'],
+    '21世紀的公共空間典範',
+    '2018 年開幕的全新圖書館，由 ALA Architects 設計。波浪形的木質天花板與挑高玻璃帷幕創造出明亮開放的空間，不僅是圖書館，更是市民的客廳。',
+    '三樓的露台可以俯瞰國會大廈，是絕佳的拍照點！',
+    'Töölönlahdenkatu 4，中央車站步行10分鐘'
+  ),
+
+  createCityPOI(
+    'temppeliaukio-church',
+    'Temppeliaukio Church',
+    '岩石教堂',
+    '12月20日',
+    2,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['必訪', '拍照景點'],
+    '在岩石中鑿出的建築奇蹟',
+    '一座直接在巨大岩石中鑿出的教堂。銅製圓頂與自然光的結合，創造出寧靜而又極具現代感的震撼美學。',
+    '音響效果極佳，經常有音樂會演出，可查詢官網行程表。',
+    '電車 2/3 號或公車 14/18 號'
+  ),
+
+  createCityPOI(
+    'cafe-regatta',
+    'Café Regatta',
+    'Regatta 海邊咖啡館',
+    '12月20日',
+    2,
+    'helsinki',
+    '赫爾辛基',
+    'restaurant',
+    '餐廳',
+    ['當地體驗', '美食', '拍照景點'],
+    '海邊的紅色小木屋',
+    '位於海邊的迷你咖啡館，紅色木屋外觀超級可愛。冬天可以在戶外烤棉花糖，喝著熱可可看海景，是赫爾辛基最浪漫的角落。',
+    '肉桂捲 (Korvapuusti) 超級好吃！室內座位很少，建議外帶到海邊長凳享用。',
+    'Merikannontie 8，電車 4 號'
+  ),
+
+  createCityPOI(
+    'finlandia-hall',
+    'Finlandia Hall',
+    '芬蘭廳',
+    '12月20日',
+    2,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['設計朝聖'],
+    'Alvar Aalto 的建築傑作',
+    '由芬蘭國寶建築師 Alvar Aalto 設計的音樂廳與會議中心，白色大理石外牆在湖畔格外醒目。是芬蘭現代主義建築的經典之作。',
+    '建築內部需購票或參加導覽才能參觀，但外觀與湖景已值得一訪！',
+    'Mannerheimintie 13e，Töölönlahti 湖畔'
+  ),
+  
+  createCityPOI(
+    'stockmann',
+    'Stockmann Department Store',
+    'Stockmann 百貨',
+    '12月20日',
+    2,
+    'helsinki',
+    '赫爾辛基',
+    'shopping',
+    '購物',
+    ['當地體驗'],
+    '北歐最大的百貨公司',
+    '創立於 1862 年的芬蘭老牌百貨，地下美食超市 (Herkku) 買售各種芬蘭特色食材和伴手禮，是採購 Fazer 巧克力、莓果果醬的好去處。',
+    '聖誕季會有美麗的櫥窗裝飾，別錯過地下美食超市！',
+    'Aleksanterinkatu 52B，市中心'
+  ),
+
+  // Day 7 - 12月25日（聖誕節）
+  createCityPOI(
+    'toolo-lake',
+    'Töölönlahti Bay',
+    'Töölö 湖灣',
+    '12月25日',
+    7,
+    'helsinki',
+    '赫爾辛基',
+    'nature',
+    '自然',
+    ['當地體驗', '拍照景點'],
+    '寧靜的城市綠洲',
+    '位於市中心的湖灣區域，冬季湖面結冰，當地人會在這裡滑冰散步。周邊有Finlandia Hall、國家博物館等建築，是感受赫爾辛基日常生活的好地方。',
+    '聖誕節許多景點關閉，來湖邊散步是最療癒的選擇！',
+    '中央車站步行15分鐘'
+  ),
+
+  createCityPOI(
+    'sibelius-monument',
+    'Sibelius Monument',
+    '西貝流士紀念碑',
+    '12月25日',
+    7,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['拍照景點'],
+    '向音樂大師致敬',
+    '由 600 多支不鏽鋼管組成的抽象雕塑，紀念芬蘭國寶級作曲家 Jean Sibelius。位於海邊公園，寧靜且充滿藝術氣息。',
+    '強風吹過時，鋼管會發出低沉的共鳴聲，彷彿管風琴演奏！',
+    '電車 2 號，Töölö 區'
+  ),
+
+  createCityPOI(
+    'kaivopuisto-park',
+    'Kaivopuisto Park',
+    'Kaivopuisto 海濱公園',
+    '12月25日',
+    7,
+    'helsinki',
+    '赫爾辛基',
+    'nature',
+    '自然',
+    ['拍照景點', '當地體驗'],
+    '赫爾辛基的南端海岬',
+    '赫爾辛基最古老的公園，位於半島南端，可以看到波羅的海與周邊島嶼。冬季雖然寒冷，但海景依然壯觀，是當地人遛狗散步的熱門地點。',
+    '公園內有幾座優雅的使館建築，非常適合拍照！',
+    '電車 3T 到 Kaivopuisto 站'
+  ),
+
+  // Day 8 - 12月26日
+  createCityPOI(
+    'national-library',
+    'National Library of Finland',
+    '芬蘭國家圖書館',
+    '12月26日',
+    8,
+    'helsinki',
+    '赫爾辛基',
+    'museum',
+    '博物館',
+    ['設計朝聖', '拍照景點'],
+    '新古典主義的圖書殿堂',
+    '建於 1840 年的宏偉圖書館，大閱覽室有高聳的科林斯柱與精美的壁畫天花板。冬季遊客較少，可以靜靜感受知識殿堂的莊嚴氣氛。',
+    '大閱覽室免費參觀，但需保持安靜。絕美的穹頂值得仰望！',
+    'Unioninkatu 36，參議院廣場旁'
+  ),
+
+  createCityPOI(
+    'kaisa-library',
+    'Helsinki University Kaisa Library',
+    '赫爾辛基大學 Kaisa 圖書館',
+    '12月26日',
+    8,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['設計朝聖', '拍照景點'],
+    '現代建築的學習空間',
+    '2012 年開幕的大學圖書館，由 Anttinen Oiva Architects 設計。紅磚外牆與玻璃帷幕的結合，內部螺旋樓梯是 Instagram 熱門打卡點。',
+    '需要學生證才能進入部分區域，但一樓大廳和咖啡館開放所有人！',
+    'Fabianinkatu 30，市中心'
+  ),
+
+  createCityPOI(
+    'amos-rex',
+    'Amos Rex Museum',
+    '阿莫斯瑞克美術館',
+    '12月26日',
+    8,
+    'helsinki',
+    '赫爾辛基',
+    'museum',
+    '博物館',
+    ['設計朝聖', '必訪', '拍照景點'],
+    '地下的當代藝術奇蹟',
+    '2018 年開幕的地下美術館，屋頂的圓頂天窗從 Lasipalatsi 廣場突出，成為新地標。展出當代藝術與數位藝術，互動性極強。',
+    '廣場上的圓頂可以爬上去拍照！館內禁止攝影，但體驗勝過拍照。',
+    'Mannerheimintie 22-24，Kamppi 附近'
+  ),
+
+  createCityPOI(
+    'kamppi-chapel',
+    'Kamppi Chapel of Silence',
+    'Kamppi 寧靜教堂',
+    '12月26日',
+    8,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['設計朝聖', '拍照景點'],
+    '都市中的靜謐空間',
+    '完全由木材建造的現代教堂，外觀如同巨大的木製船體。內部沒有任何宗教符號，是讓人沉澱心靈的公共空間。',
+    '這裡完全免費，且歡迎所有人進入靜坐休息，非常適合旅途中喘口氣。',
+    'Simonkatu 7，Kamppi 購物中心旁'
+  ),
+
+  createCityPOI(
+    'old-market-hall',
+    'Old Market Hall',
+    '老農市集',
+    '12月26日',
+    8,
+    'helsinki',
+    '赫爾辛基',
+    'shopping',
+    '購物',
+    ['美食', '當地體驗'],
+    '百年傳統室內市場',
+    '建於 1889 年的紅磚市場建築，內有各種芬蘭傳統美食攤位，包括煙燻鮭魚、馴鹿肉、芬蘭起司等。是採購伴手禮和品嚐在地美食的好地方。',
+    '試試傳統的卡累利阿派（Karjalanpiirakka）配蛋黃奶油！',
+    '港口旁，Market Square 旁邊'
+  ),
+
+  createCityPOI(
+    'uspenski-cathedral',
+    'Uspenski Cathedral',
+    '烏斯佩斯基大教堂',
+    '12月26日',
+    8,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['必訪', '拍照景點'],
+    '北歐最大的東正教教堂',
+    '建於 1868 年的紅磚東正教大教堂，洋蔥形金色圓頂在海港邊格外醒目。內部有精美的聖像畫和華麗的吊燈，展現俄羅斯拜占庭風格。',
+    '教堂位於小山丘上，可以俯瞰港口和市區美景！',
+    'Kanavakatu 1，港口區 Katajanokka 半島'
+  ),
+
+  // Day 11 - 12月29日
+  createCityPOI(
+    'st-johns-church',
+    "St. John's Church",
+    '聖約翰教堂',
+    '12月29日',
+    11,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['拍照景點'],
+    '赫爾辛基最大的教堂',
+    '新哥德式建築，雙塔高達 74 公尺，是赫爾辛基最高的教堂。紅磚外觀與尖塔在城市天際線上非常顯眼，內部空間宏偉莊嚴。',
+    '如果時間充裕再訪，教堂位於住宅區，氛圍寧靜。',
+    'Korkeavuorenkatu 12，電車 6/9 號'
+  ),
+
+  createCityPOI(
+    'artek-store',
+    'Artek Store & Showroom',
+    'Artek 傑具設計商店',
+    '12月29日',
+    11,
+    'helsinki',
+    '赫爾辛基',
+    'shopping',
+    '購物',
+    ['設計朝聖', '必訪'],
+    'Alvar Aalto 的設計王國',
+    '由 Alvar Aalto 創立的家具品牌旗艦店，展示經典的曲木椅、Stool 60 等北歐設計名作。即使不購買，也值得進去欣賞設計之美。',
+    'Stool 60 是經典中的經典，全球賣出超過 800 萬張！',
+    'Eteläesplanadi 18，Esplanadi 公園旁'
+  ),
+
+  createCityPOI(
     'design-museum',
     'Design Museum',
     '設計博物館',
-    '12月20日',
-    2,
+    '12月29日',
+    11,
     'helsinki',
     '赫爾辛基',
     'museum',
@@ -143,8 +421,8 @@ export const cityData: CityPOI[] = [
     'ateneum',
     'Ateneum Art Museum',
     '阿黛濃美術館',
-    '12月20日',
-    2,
+    '12月29日',
+    11,
     'helsinki',
     '赫爾辛基',
     'museum',
@@ -155,101 +433,31 @@ export const cityData: CityPOI[] = [
     '週五開放到晚上 8 點，適合下午悠閒參觀！',
     'Kaivokatu 2，中央車站旁'
   ),
-  
+
   createCityPOI(
-    'stockmann',
-    'Stockmann Department Store',
-    'Stockmann 百貨',
-    '12月20日',
-    2,
+    'academic-bookstore',
+    'Academic Bookstore',
+    '學術書店',
+    '12月29日',
+    11,
     'helsinki',
     '赫爾辛基',
     'shopping',
     '購物',
-    ['當地體驗'],
-    '北歐最大的百貨公司',
-    '創立於 1862 年的芬蘭老牌百貨，地下美食超市 (Herkku) 販售各種芬蘭特色食材和伴手禮，是採購 Fazer 巧克力、莓果果醬的好去處。',
-    '聖誕季會有美麗的櫥窗裝飾，別錯過地下美食超市！',
-    'Aleksanterinkatu 52B，市中心'
-  ),
-
-  // Day 3 - 12月21日
-  createCityPOI(
-    'kiasma',
-    'Kiasma Museum',
-    'Kiasma 當代藝術博物館',
-    '12月21日',
-    3,
-    'helsinki',
-    '赫爾辛基',
-    'museum',
-    '博物館',
     ['設計朝聖'],
-    '前衛藝術空間',
-    '由美國建築師 Steven Holl 設計的現代建築，展出北歐及國際當代藝術作品。建築本身的曲線設計與自然光運用令人驚艷。',
-    '免費入場日通常是每月第一個週五，可以先上官網確認！',
-    'Mannerheiminaukio 2，國會大廈對面'
-  ),
-  
-  createCityPOI(
-    'kamppi-chapel',
-    'Kamppi Chapel of Silence',
-    'Kamppi 寧靜教堂',
-    '12月21日',
-    3,
-    'helsinki',
-    '赫爾辛基',
-    'attraction',
-    '景點',
-    ['設計朝聖', '拍照景點'],
-    '都市中的靜謐空間',
-    '完全由木材建造的現代教堂，外觀如同巨大的木製船體。內部沒有任何宗教符號，是讓人沉澱心靈的公共空間。',
-    '這裡完全免費，且歡迎所有人進入靜坐休息，非常適合旅途中喘口氣。',
-    'Simonkatu 7，Kamppi 購物中心旁'
+    'Alvar Aalto 設計的書店',
+    '由 Alvar Aalto 設計的書店建築，是全球最美書店之一。三層樓的開放空間，有豐富的芬蘭設計、建築類書籍與文具。',
+    '二樓有 Aalto 的原始設計圖展示，書迷和設計迷必訪！',
+    'Keskuskatu 1，中央車站對面'
   ),
 
-  // Day 12 - 12月26日
-  createCityPOI(
-    'temppeliaukio-church',
-    'Temppeliaukio Church',
-    '岩石教堂',
-    '12月26日',
-    12,
-    'helsinki',
-    '赫爾辛基',
-    'attraction',
-    '景點',
-    ['必訪', '拍照景點'],
-    '在岩石中鑿出的建築奇蹟',
-    '我們參觀了這座不可思議的建築——一座直接在巨大岩石中鑿出的教堂。銅製圓頂與自然光的結合，創造出寧靜而又極具現代感的震撼美學。',
-    '音響效果極佳，經常有音樂會演出，可查詢官網行程表。',
-    '電車 2/3 號或公車 14/18 號'
-  ),
-  
-  createCityPOI(
-    'sibelius-monument',
-    'Sibelius Monument',
-    '西貝流士紀念碑',
-    '12月26日',
-    12,
-    'helsinki',
-    '赫爾辛基',
-    'attraction',
-    '景點',
-    ['拍照景點'],
-    '向音樂大師致敬',
-    '由 600 多支不鏽鋼管組成的抽象雕塑，紀念芬蘭國寶級作曲家 Jean Sibelius。位於海邊公園，寧靜且充滿藝術氣息。',
-    '強風吹過時，鋼管會發出低沉的共鳴聲，彷彿管風琴演奏！',
-    '電車 2 號，Töölö 區'
-  ),
-
-  // Day 15 - 12月29日
+  // Day 14 - 1月1日（元旦）
   createCityPOI(
     'airport-design-shop',
     'Helsinki Airport Design District',
     '赫爾辛基機場設計區',
-    '12月29日',
-    15,
+    '1月1日',
+    14,
     'helsinki',
     '赫爾辛基',
     'shopping',
@@ -262,16 +470,32 @@ export const cityData: CityPOI[] = [
   ),
 
   // ==============================
-  // 塔林 Tallinn (Day 10-11)
+  // 塔林 Tallinn (Day 9)
   // ==============================
   
-  // Day 10 - 12月27日
+  createCityPOI(
+    'viru-gate',
+    'Viru Gate',
+    '維魯城門',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'attraction',
+    '景點',
+    ['必訪', '拍照景點', '中世紀'],
+    '舊城的入口地標',
+    '建於 14 世紀的城門，是進入塔林舊城的主要入口。雙塔結構保存完好，是塔林最具代表性的中世紀建築之一。',
+    '城門兩側是熱鬧的 Viru 街，有許多紀念品店和餐廳！',
+    '舊城東側入口'
+  ),
+
   createCityPOI(
     'tallinn-old-town',
     'Tallinn Old Town',
     '塔林舊城區',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'attraction',
@@ -282,13 +506,30 @@ export const cityData: CityPOI[] = [
     '舊城區全部都是石板路，建議穿舒適的鞋子！',
     '從郵輪碼頭步行約 15-20 分鐘'
   ),
+
+  createCityPOI(
+    'town-hall-pharmacy',
+    'Town Hall Pharmacy',
+    '市政廳藥局',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'museum',
+    '博物館',
+    ['中世紀', '當地體驗'],
+    '歐洲最古老的營業藥局',
+    '創立於 1422 年，已連續營業超過 600 年的藥局。現在一部分是博物館，展示古老的藥瓶、處方與醫療工具，另一部分仍在販售藥品。',
+    '可以買到傳統的藥草茶和蜂蜜酒配方，很特別的伴手禮！',
+    'Raekoja plats 11，市政廳廣場上'
+  ),
   
   createCityPOI(
     'alexander-nevsky-cathedral',
     'Alexander Nevsky Cathedral',
     '亞歷山大·涅夫斯基主教座堂',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'attraction',
@@ -299,13 +540,30 @@ export const cityData: CityPOI[] = [
     '教堂鐘聲非常洪亮，整點時會響徹舊城！',
     '位於 Toompea 山丘上，國會大廈旁'
   ),
+
+  createCityPOI(
+    'st-marys-cathedral',
+    "St. Mary's Cathedral",
+    '聖母主教座堂',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'attraction',
+    '景點',
+    ['中世紀', '拍照景點'],
+    '塔林最古老的教堂',
+    '建於 13 世紀的路德教會教堂，也是愛沙尼亞最古老的教堂之一。內部有精美的木雕祭壇和貴族家族的徽章裝飾。',
+    '教堂墓地埋葬了許多歷史名人，包括瑞典和俄國時期的貴族！',
+    'Toom-Kooli 6，Toompea 山丘上'
+  ),
   
   createCityPOI(
     'toompea-castle',
     'Toompea Castle',
     '圖姆皮城堡',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'attraction',
@@ -316,13 +574,47 @@ export const cityData: CityPOI[] = [
     '只能外觀拍照，無法入內參觀。但城堡外的觀景台可以俯瞰整個塔林舊城！',
     'Lossi plats 1a'
   ),
+
+  createCityPOI(
+    'danish-kings-garden',
+    "Danish King's Garden",
+    '丹麥國王花園',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'nature',
+    '自然',
+    ['當地體驗', '拍照景點'],
+    '傳說中丹麥國旗誕生之地',
+    '根據傳說，1219 年丹麥國王在此作戰時，紅白十字國旗從天而降，帶來勝利。花園內有紀念碑和美麗的城牆景觀。',
+    '夏季是綠意盎然的公園，冬季則寧靜蕭瑟，各有風情！',
+    'Toompea 山丘北側'
+  ),
+
+  createCityPOI(
+    'tallinn-town-hall',
+    'Tallinn Town Hall',
+    '塔林市政廳',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'attraction',
+    '景點',
+    ['必訪', '中世紀', '拍照景點'],
+    '北歐唯一的哥德式市政廳',
+    '建於 1404 年的市政廳，是北歐地區唯一保存完好的哥德式市政廳建築。高塔頂端的風向標「老托馬斯」是塔林的守護者象徵。',
+    '夏季可以爬上 64 公尺高的塔樓，冬季關閉。但外觀已經非常壯觀！',
+    'Raekoja plats 1，市政廳廣場'
+  ),
   
   createCityPOI(
     'town-hall-square',
     'Town Hall Square',
     '市政廳廣場',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'attraction',
@@ -334,13 +626,29 @@ export const cityData: CityPOI[] = [
     '舊城中心'
   ),
 
-  // Day 11 - 12月28日
+  createCityPOI(
+    'freedom-square',
+    'Freedom Square',
+    '自由廣場',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'attraction',
+    '景點',
+    ['當地體驗'],
+    '現代塔林的象徵',
+    '2009 年重新設計的廣場，紀念愛沙尼亞獨立戰爭勝利。中央的玻璃十字架「獨立十字」高 23.5 公尺，晚上會發光。',
+    '廣場連接舊城和新城，是當地人聚會和活動的場所！',
+    '舊城南側，Kaarli 大道旁'
+  ),
+
   createCityPOI(
     'st-olaf-church',
     "St. Olaf's Church",
     '聖奧拉夫教堂',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'attraction',
@@ -357,7 +665,7 @@ export const cityData: CityPOI[] = [
     'Kohtuotsa Viewing Platform',
     'Kohtuotsa 觀景台',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'attraction',
@@ -368,13 +676,30 @@ export const cityData: CityPOI[] = [
     '日落時分最美，金色陽光灑在紅色屋頂上！',
     'Kohtu 12'
   ),
+
+  createCityPOI(
+    'maiasmokk-cafe',
+    'Maiasmokk Café',
+    'Maiasmokk 咖啡館',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'restaurant',
+    '餐廳',
+    ['當地體驗', '美食', '中世紀'],
+    '愛沙尼亞最古老的咖啡館',
+    '創立於 1864 年的歷史咖啡館，保留了 19 世紀的裝潢風格。以手工巧克力和傳統糕點聞名，還有現場製作杏仁糖的工作坊。',
+    '招牌是杏仁糖 (Marzipan)，可以買造型可愛的杏仁糖小豬當伴手禮！',
+    'Pikk 16，舊城內'
+  ),
   
   createCityPOI(
     'olde-hansa',
     'Olde Hansa Restaurant',
     '老漢薩餐廳',
     '12月27日',
-    10,
+    9,
     'tallinn',
     '塔林',
     'restaurant',
@@ -386,8 +711,25 @@ export const cityData: CityPOI[] = [
     'Vana turg 1，市政廳廣場旁'
   ),
 
+  createCityPOI(
+    'kompressor-pancakes',
+    'Kompressor Pancake House',
+    'Kompressor 巨型鬆餅店',
+    '12月27日',
+    9,
+    'tallinn',
+    '塔林',
+    'restaurant',
+    '餐廳',
+    ['美食', '當地體驗'],
+    '超大份量的愛沙尼亞鬆餅',
+    '塔林最受歡迎的平價餐廳，以巨大的鹹甜鬆餅聞名。一份鬆餅幾乎有盤子那麼大，價格卻非常親民，常常需要排隊。',
+    '推薦鹹味的起司火腿鬆餅，或甜味的蘋果肉桂！一人吃一份就很飽。',
+    'Rataskaevu 3，舊城內'
+  ),
+
   // ==============================
-  // 波爾沃 Porvoo (Day 13)
+  // 波爾沃 Porvoo (Day 10)
   // ==============================
   
   createCityPOI(
@@ -395,7 +737,7 @@ export const cityData: CityPOI[] = [
     'Porvoo Old Town',
     '波爾沃舊城',
     '12月28日',
-    13,
+    10,
     'porvoo',
     '波爾沃',
     'attraction',
@@ -412,7 +754,7 @@ export const cityData: CityPOI[] = [
     'Porvoo Cathedral',
     '波爾沃大教堂',
     '12月28日',
-    13,
+    10,
     'porvoo',
     '波爾沃',
     'attraction',
@@ -423,13 +765,47 @@ export const cityData: CityPOI[] = [
     '1809 年俄國沙皇亞歷山大一世在此宣布芬蘭為自治大公國，歷史意義重大！',
     '舊城山丘頂'
   ),
+
+  createCityPOI(
+    'nasin-kivi-viewpoint',
+    'Näsin kivi Viewpoint',
+    'Näsin kivi 觀景石',
+    '12月28日',
+    10,
+    'porvoo',
+    '波爾沃',
+    'nature',
+    '自然',
+    ['拍照景點', '當地體驗'],
+    '俯瞰紅色倉庫的最佳角度',
+    '位於河岸山丘上的觀景點，可以拍到經典的紅色倉庫倒影照片。冬季雪景時更加夢幻，是攝影愛好者的必訪地點。',
+    '建議沿著河岸步道慢慢走上來，沿途風景很美！',
+    '老城區河岸步道'
+  ),
+
+  createCityPOI(
+    'porvoo-art-factory',
+    'Taidetehdas (Art Factory)',
+    '波爾沃藝術工廠',
+    '12月28日',
+    10,
+    'porvoo',
+    '波爾沃',
+    'museum',
+    '博物館',
+    ['當地體驗', '拍照景點'],
+    '工業遺址的藝術空間',
+    '由舊工廠改建的藝廊與工作室，展示當地藝術家的作品，包括繪畫、陶藝、攝影等。建築本身保留了工業風格，很有特色。',
+    '不定期有手工藝工作坊和市集活動，可以買到獨特的手作商品！',
+    'Vanha Porvoonkatu 15'
+  ),
   
   createCityPOI(
     'porvoo-market-hall',
     'Porvoo Old Market Hall',
     '波爾沃舊市場',
     '12月28日',
-    13,
+    10,
     'porvoo',
     '波爾沃',
     'shopping',
@@ -440,13 +816,47 @@ export const cityData: CityPOI[] = [
     '試試 Brunberg 巧克力，這個品牌創立於波爾沃，是當地的驕傲！',
     'Mannerheiminkatu 2'
   ),
+
+  createCityPOI(
+    'hanna-maria-restaurant',
+    'Restaurant Hanna Maria',
+    'Hanna Maria 餐廳',
+    '12月28日',
+    10,
+    'porvoo',
+    '波爾沃',
+    'restaurant',
+    '餐廳',
+    ['美食', '當地體驗'],
+    '河岸邊的傳統芬蘭料理',
+    '位於紅色倉庫區的餐廳，供應傳統芬蘭料理和當地食材。靠窗座位可以欣賞河景，氛圍溫馨舒適。',
+    '推薦鮭魚湯和馴鹿肉，都是芬蘭經典菜色！',
+    'Välikatu 3，紅色倉庫區'
+  ),
+
+  createCityPOI(
+    'porvoon-paahtimo',
+    'Porvoon Paahtimo',
+    '波爾沃烘焙坊咖啡館',
+    '12月28日',
+    10,
+    'porvoo',
+    '波爾沃',
+    'restaurant',
+    '餐廳',
+    ['美食', '當地體驗'],
+    '自家烘焙的咖啡香',
+    '小鎮上深受當地人喜愛的咖啡館，自家烘焙咖啡豆，提供新鮮糕點和三明治。溫暖的木質裝潢讓人想多待一會兒。',
+    '肉桂捲和卡布奇諾是絕配！冬天來一杯熱咖啡最舒服。',
+    'Mannerheiminkatu 2，舊市場旁'
+  ),
   
   createCityPOI(
     'runeberg-home',
     "Runeberg's Home Museum",
     '倫貝格故居博物館',
     '12月28日',
-    13,
+    10,
     'porvoo',
     '波爾沃',
     'museum',
@@ -459,15 +869,15 @@ export const cityData: CityPOI[] = [
   ),
 
   // ==============================
-  // 芬蘭堡 Suomenlinna (Day 14)
+  // 芬蘭堡 Suomenlinna (Day 12)
   // ==============================
   
   createCityPOI(
     'suomenlinna-fortress',
     'Suomenlinna Sea Fortress',
     '芬蘭堡海上堡壘',
-    '12月28日',
-    14,
+    '12月30日',
+    12,
     'suomenlinna',
     '芬蘭堡',
     'attraction',
@@ -483,8 +893,8 @@ export const cityData: CityPOI[] = [
     'suomenlinna-museum',
     'Suomenlinna Museum',
     '芬蘭堡博物館',
-    '12月28日',
-    14,
+    '12月30日',
+    12,
     'suomenlinna',
     '芬蘭堡',
     'museum',
@@ -500,8 +910,8 @@ export const cityData: CityPOI[] = [
     'suomenlinna-church',
     'Suomenlinna Church',
     '芬蘭堡教堂',
-    '12月28日',
-    14,
+    '12月30日',
+    12,
     'suomenlinna',
     '芬蘭堡',
     'attraction',
@@ -517,8 +927,8 @@ export const cityData: CityPOI[] = [
     'suomenlinna-cafe',
     'Café Chapman & Café Vanille',
     '島上咖啡館',
-    '12月28日',
-    14,
+    '12月30日',
+    12,
     'suomenlinna',
     '芬蘭堡',
     'restaurant',
@@ -528,6 +938,27 @@ export const cityData: CityPOI[] = [
     '島上有幾家溫馨的咖啡館，提供芬蘭傳統糕點與熱飲。冬季在戶外散步後，來杯熱可可特別治癒。',
     'Café Vanille 的肉桂捲 (Korvapuusti) 超級好吃！',
     '島上多處'
+  ),
+
+  // ==============================
+  // Helsinki - Löyly Sauna (Day 12)
+  // ==============================
+  
+  createCityPOI(
+    'loyly-sauna',
+    'Löyly Helsinki',
+    'Löyly 桑拿會館',
+    '12月30日',
+    12,
+    'helsinki',
+    '赫爾辛基',
+    'attraction',
+    '景點',
+    ['必訪', '當地體驗', '設計朝聖'],
+    '建築與桑拿的完美結合',
+    '獲獎無數的現代桑拿建築，由 Avanto Architects 設計。提供傳統芬蘭桑拿和海水冰池體驗，冬季可以體驗冰火兩重天的刺激感受。',
+    '建議預約！桑拿後直接跳進波羅的海是芬蘭人最愛的冬季活動。餐廳的北歐料理也很棒！',
+    'Hernesaarenranta 4，電車 6/9 號'
   ),
 ];
 
