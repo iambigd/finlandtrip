@@ -584,6 +584,10 @@
     z-index: 50;
   }
 
+  .z-\[60\] {
+    z-index: 60;
+  }
+
   .order-1 {
     order: 1;
   }

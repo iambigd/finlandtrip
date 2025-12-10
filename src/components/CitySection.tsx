@@ -331,7 +331,25 @@ const CitySection = ({
         {selectedCity !== 'all' && (
           <div className="mt-16 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
             <h3 className="text-2xl font-serif mb-6 flex items-center">
-              <span className="text-3xl mr-3">🎅</span>
+              <div className="w-8 h-8 mr-3 flex-shrink-0">
+                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
+                  {/* Face */}
+                  <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
+                  {/* Eyes */}
+                  <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
+                  <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
+                  {/* Smile */}
+                  <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
+                  {/* Blush */}
+                  <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                  <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                  {/* Santa Hat */}
+                  <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
+                  <circle cx="50" cy="6" r="8" fill="#fff" />
+                  {/* Collar */}
+                  <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
+                </svg>
+              </div>
               Tonttu 的 {cityFilterOptions.find(c => c.value === selectedCity)?.label} 秘訣
             </h3>
             <ul className="space-y-3">

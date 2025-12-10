@@ -96,7 +96,7 @@ const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency }: Mob
                   className="w-full px-4 py-3 bg-amber-50 hover:bg-amber-100 transition text-left flex items-center justify-between"
                 >
                   <div>
-                    <div className="font-sans text-sm text-amber-900">📋 旅行規劃</div>
+                    <div className="font-sans text-sm text-amber-900">旅行規劃</div>
                     <div className="text-xs text-amber-700">Planning</div>
                   </div>
                   <ChevronDown

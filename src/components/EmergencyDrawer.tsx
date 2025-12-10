@@ -36,14 +36,14 @@ const EmergencyDrawer = ({ isOpen, onClose }: EmergencyDrawerProps) => {
     <>
       {/* 背景遮罩 */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 transition-opacity duration-300"
+        className="fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300"
         onClick={onClose}
       />
 
       {/* 抽屜內容 */}
       <div
         className={`
-          fixed z-50 bg-white shadow-2xl
+          fixed z-[60] bg-white shadow-2xl
           md:top-0 md:left-0 md:h-full md:w-[600px]
           md:animate-slide-in-left
           bottom-0 left-0 right-0 h-[85vh] rounded-t-3xl
@@ -278,7 +278,25 @@ const EmergencyDrawer = ({ isOpen, onClose }: EmergencyDrawerProps) => {
           {/* Tonttu 提示 */}
           <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg">
             <div className="flex items-start">
-              <span className="text-3xl mr-3">🎅</span>
+              <div className="w-8 h-8 mr-3 flex-shrink-0">
+                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
+                  {/* Face */}
+                  <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
+                  {/* Eyes */}
+                  <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
+                  <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
+                  {/* Smile */}
+                  <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
+                  {/* Blush */}
+                  <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                  <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                  {/* Santa Hat */}
+                  <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
+                  <circle cx="50" cy="6" r="8" fill="#fff" />
+                  {/* Collar */}
+                  <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
+                </svg>
+              </div>
               <div>
                 <p className="font-sans font-bold text-blue-900 mb-2">Tonttu 的安全提示</p>
                 <ul className="text-sm text-blue-800 space-y-2">
