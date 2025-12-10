@@ -16,7 +16,6 @@ const TonttuTip = () => {
 
   const tips: TipData = {
     cover: { title: '歡迎!', text: '點擊「旅程地圖」按鈕，開始您的極地之旅。' },
-    prep: { title: '行前準備', text: '別忘了下載 HSL App！它讓您在市區購票輕鬆許多。' },
     city: { 
       title: '城市探索', 
       text: '使用篩選器尋找您感興趣的景點類型！每個城市都有獨特的魅力等您發現。Helsinki Card 可以免費使用大眾交通與參觀多數博物館，非常划算！' 
@@ -60,7 +59,7 @@ const TonttuTip = () => {
     setTip('cover');
 
     // Setup ScrollTriggers for different sections
-    const sections = ['prep', 'city', 'arctic', 'food'];
+    const sections = ['city', 'arctic', 'food'];
 
     sections.forEach((id) => {
       ScrollTrigger.create({

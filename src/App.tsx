@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
+import MobileMenu from './components/MobileMenu';
+import MobileTabBar from './components/MobileTabBar';
 import TonttuTip from './components/TonttuTip';
 import CoverSection from './components/CoverSection';
 import MapSection from './components/MapSection';
-import PrepSection from './components/PrepSection';
 import CitySection from './components/CitySection';
 import ArcticSection from './components/ArcticSection';
 import FoodSection from './components/FoodSection';
 import Footer from './components/Footer';
 import RatingModal from './components/RatingModal';
 import ViewingModal from './components/ViewingModal';
+import PreparationDrawer from './components/PreparationDrawer';
+import TaxRefundDrawer from './components/TaxRefundDrawer';
+import EmergencyDrawer from './components/EmergencyDrawer';
 
 export interface Comment {
   id: number;
@@ -34,6 +38,11 @@ function App() {
   const [currentPoiName, setCurrentPoiName] = useState('');
   const [activeMapLocation, setActiveMapLocation] = useState('helsinki');
   const [selectedCityFilter, setSelectedCityFilter] = useState<CityFilterType>('all');
+
+  // Drawer states
+  const [isPreparationOpen, setIsPreparationOpen] = useState(false);
+  const [isTaxRefundOpen, setIsTaxRefundOpen] = useState(false);
+  const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
 
   // Rating Modal Functions
   const openRatingModal = (id: string, name: string) => {
@@ -103,11 +112,28 @@ function App() {
       {/* Tonttu Tip System */}
       <TonttuTip />
 
-      {/* Navigation */}
-      <Navigation />
+      {/* Desktop Navigation */}
+      <Navigation
+        onOpenPreparation={() => setIsPreparationOpen(true)}
+        onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
+        onOpenEmergency={() => setIsEmergencyOpen(true)}
+      />
+
+      {/* Mobile Navigation */}
+      <MobileMenu
+        onOpenPreparation={() => setIsPreparationOpen(true)}
+        onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
+        onOpenEmergency={() => setIsEmergencyOpen(true)}
+      />
+
+      {/* Mobile Tab Bar */}
+      <MobileTabBar
+        onOpenEmergency={() => setIsEmergencyOpen(true)}
+        onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
+      />
 
       {/* Main Content */}
-      <main>
+      <main className="pb-20 md:pb-0">{/* Add padding-bottom for mobile tab bar */}
         <CoverSection />
         
         <MapSection 
@@ -115,8 +141,6 @@ function App() {
           setActiveMapLocation={setActiveMapLocation}
           setSelectedCityFilter={setSelectedCityFilter}
         />
-        
-        <PrepSection />
         
         <CitySection
           openRatingModal={openRatingModal}
@@ -146,6 +170,22 @@ function App() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Drawers */}
+      <PreparationDrawer
+        isOpen={isPreparationOpen}
+        onClose={() => setIsPreparationOpen(false)}
+      />
+      
+      <TaxRefundDrawer
+        isOpen={isTaxRefundOpen}
+        onClose={() => setIsTaxRefundOpen(false)}
+      />
+      
+      <EmergencyDrawer
+        isOpen={isEmergencyOpen}
+        onClose={() => setIsEmergencyOpen(false)}
+      />
 
       {/* Modals */}
       {currentPoiId && (

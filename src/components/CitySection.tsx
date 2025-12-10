@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Comment } from '../App';
 import { cityData, CityPOI, cityTips } from '../data/cityData';
@@ -32,6 +32,11 @@ const CitySection = ({
   // 使用外部 state（如果有提供），否則使用內部 state
   const selectedCity = externalSelectedCity !== undefined ? externalSelectedCity : internalSelectedCity;
   const setSelectedCity = externalSetSelectedCity || setInternalSelectedCity;
+
+  // 調試：監聽 selectedCity 變化
+  useEffect(() => {
+    console.log('🏛️ CitySection: selectedCity 更新為', selectedCity, '(來源:', externalSelectedCity !== undefined ? '外部' : '內部', ')');
+  }, [selectedCity, externalSelectedCity]);
 
   // 標籤顏色配置（與 FoodSection 一致的風格）
   const tagStyles: Record<string, string> = {

@@ -274,10 +274,14 @@ const MapSection = ({ activeMapLocation, setActiveMapLocation, setSelectedCityFi
       'levi': 'all',       // 北極圈城市
     };
     
-    setSelectedCityFilter(citySectionFilterMap[cityId] || 'all');
+    const filterValue = citySectionFilterMap[cityId] || 'all';
+    console.log('🏙️ MapSection: 點擊城市', cityId, '→ 設定篩選器為', filterValue);
+    setSelectedCityFilter(filterValue);
     
-    // 跳轉到對應區塊
-    window.location.hash = linkTo;
+    // 使用 setTimeout 確保狀態更新後再跳轉
+    setTimeout(() => {
+      window.location.hash = linkTo;
+    }, 0);
   };
 
   return (
