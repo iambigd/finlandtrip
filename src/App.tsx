@@ -24,12 +24,16 @@ export interface TipConfig {
   text: string;
 }
 
+// 定義城市類型
+export type CityFilterType = 'all' | 'helsinki' | 'tallinn' | 'porvoo' | 'suomenlinna';
+
 function App() {
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isViewingModalOpen, setIsViewingModalOpen] = useState(false);
   const [currentPoiId, setCurrentPoiId] = useState<string | null>(null);
   const [currentPoiName, setCurrentPoiName] = useState('');
   const [activeMapLocation, setActiveMapLocation] = useState('helsinki');
+  const [selectedCityFilter, setSelectedCityFilter] = useState<CityFilterType>('all');
 
   // Rating Modal Functions
   const openRatingModal = (id: string, name: string) => {
@@ -109,6 +113,7 @@ function App() {
         <MapSection 
           activeMapLocation={activeMapLocation}
           setActiveMapLocation={setActiveMapLocation}
+          setSelectedCityFilter={setSelectedCityFilter}
         />
         
         <PrepSection />
@@ -118,6 +123,9 @@ function App() {
           openViewingModal={openViewingModal}
           getAverageRating={getAverageRating}
           renderStars={renderStars}
+          loadComments={loadComments}
+          selectedCity={selectedCityFilter}
+          setSelectedCity={setSelectedCityFilter}
         />
         
         <ArcticSection
@@ -132,6 +140,7 @@ function App() {
           openViewingModal={openViewingModal}
           getAverageRating={getAverageRating}
           renderStars={renderStars}
+          loadComments={loadComments}
         />
       </main>
 

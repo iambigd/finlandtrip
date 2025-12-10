@@ -17,7 +17,10 @@ const TonttuTip = () => {
   const tips: TipData = {
     cover: { title: '歡迎!', text: '點擊「旅程地圖」按鈕，開始您的極地之旅。' },
     prep: { title: '行前準備', text: '別忘了下載 HSL App！它讓您在市區購票輕鬆許多。' },
-    city: { title: '市區探索', text: '即使塔林在申根區內，別忘了攜帶護照，偶爾會有檢查。' },
+    city: { 
+      title: '城市探索', 
+      text: '使用篩選器尋找您感興趣的景點類型！每個城市都有獨特的魅力等您發現。Helsinki Card 可以免費使用大眾交通與參觀多數博物館，非常划算！' 
+    },
     arctic: { title: '極光提醒', text: '極光攝影：將相機（或手機）的曝光時間拉長，才能捕捉到極光！' },
     food: { title: '購物筆記', text: 'Fazer 巧克力在機場免稅店通常最便宜，記得比價喔！' },
     'rating-success': (name?: string) => ({

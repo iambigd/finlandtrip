@@ -1,187 +1,346 @@
+import { useState, useMemo } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Comment } from '../App';
+import { cityData, CityPOI, cityTips } from '../data/cityData';
+import { cityImages } from '../data/cityDataImages';
+import { MapPin, Calendar, Info } from 'lucide-react';
 
 interface CitySectionProps {
   openRatingModal: (id: string, name: string) => void;
   openViewingModal: (id: string, name: string) => void;
   getAverageRating: (poiId: string, round: boolean) => number;
   renderStars: (rating: number) => string;
+  loadComments: (poiId: string) => Comment[];
+  selectedCity?: CityPOI['city'] | 'all';
+  setSelectedCity?: (city: CityPOI['city'] | 'all') => void;
 }
+
+type TypeFilter = 'all' | CityPOI['type'];
 
 const CitySection = ({
   openRatingModal,
   openViewingModal,
   getAverageRating,
   renderStars,
+  loadComments,
+  selectedCity: externalSelectedCity,
+  setSelectedCity: externalSetSelectedCity,
 }: CitySectionProps) => {
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [internalSelectedCity, setInternalSelectedCity] = useState<CityPOI['city'] | 'all'>('all');
+  
+  // 使用外部 state（如果有提供），否則使用內部 state
+  const selectedCity = externalSelectedCity !== undefined ? externalSelectedCity : internalSelectedCity;
+  const setSelectedCity = externalSetSelectedCity || setInternalSelectedCity;
+
+  // 標籤顏色配置（與 FoodSection 一致的風格）
+  const tagStyles: Record<string, string> = {
+    '必訪': 'bg-red-500 text-white',
+    '拍照景點': 'bg-pink-500 text-white',
+    '世界遺產': 'bg-purple-600 text-white',
+    '設計朝聖': 'bg-blue-600 text-white',
+    '美食': 'bg-orange-500 text-white',
+    '當地體驗': 'bg-green-500 text-white',
+    '中世紀': 'bg-amber-700 text-white',
+    '海港': 'bg-cyan-500 text-white',
+  };
+
+  // 類型篩選器選項
+  const typeFilterOptions: { value: TypeFilter; label: string; emoji: string }[] = [
+    { value: 'all', label: '全部景點', emoji: '🗺️' },
+    { value: 'attraction', label: '景點', emoji: '🏛️' },
+    { value: 'museum', label: '博物館', emoji: '🎨' },
+    { value: 'restaurant', label: '餐廳', emoji: '🍽️' },
+    { value: 'shopping', label: '購物', emoji: '🛍️' },
+    { value: 'nature', label: '自然', emoji: '🌳' },
+    { value: 'transport', label: '交通', emoji: '🚂' },
+  ];
+
+  // 城市篩選器選項
+  const cityFilterOptions: { value: CityPOI['city'] | 'all'; label: string; color: string }[] = [
+    { value: 'all', label: '所有城市', color: 'bg-gray-500' },
+    { value: 'helsinki', label: '赫爾辛基', color: 'bg-blue-500' },
+    { value: 'tallinn', label: '塔林', color: 'bg-amber-500' },
+    { value: 'porvoo', label: '波爾沃', color: 'bg-rose-500' },
+    { value: 'suomenlinna', label: '芬蘭堡', color: 'bg-indigo-500' },
+  ];
+
+  // 渲染標籤
+  const renderTags = (tags: string[]) => {
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {tags.map((tag, idx) => (
+          <span
+            key={idx}
+            className={`text-xs px-2 py-1 rounded ${tagStyles[tag] || 'bg-gray-500 text-white'}`}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  // 篩選資料
+  const filteredData = useMemo(() => {
+    return cityData.filter(poi => {
+      const typeMatch = typeFilter === 'all' || poi.type === typeFilter;
+      const cityMatch = selectedCity === 'all' || poi.city === selectedCity;
+      return typeMatch && cityMatch;
+    });
+  }, [typeFilter, selectedCity]);
+
+  // 按日期分組
+  const groupedByDay = useMemo(() => {
+    const groups: Record<number, CityPOI[]> = {};
+    filteredData.forEach(poi => {
+      if (!groups[poi.dayNumber]) {
+        groups[poi.dayNumber] = [];
+      }
+      groups[poi.dayNumber].push(poi);
+    });
+    return groups;
+  }, [filteredData]);
+
+  const sortedDays = Object.keys(groupedByDay)
+    .map(Number)
+    .sort((a, b) => a - b);
+
+  // 獲取城市對應的邊框顏色
+  const getCityBorderColor = (city: CityPOI['city']): string => {
+    const colorMap: Record<CityPOI['city'], string> = {
+      helsinki: 'border-blue-400',
+      tallinn: 'border-amber-400',
+      porvoo: 'border-rose-400',
+      suomenlinna: 'border-indigo-400',
+    };
+    return colorMap[city];
+  };
+
   return (
-    <section id="city" className="py-24 bg-white max-w-7xl mx-auto px-6 relative z-10">
-      <h2 className="text-6xl font-serif italic text-[#111] mb-16 border-b border-gray-200 pb-4">
-        Helsinki & Surroundings
-        <span className="dual-title-zh text-lg uppercase text-gray-600">赫爾辛基與周邊城市</span>
-      </h2>
-
-      {/* Helsinki Cathedral */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20 pt-10 border-t border-gray-100">
-        <div className="relative overflow-hidden h-[450px]">
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1651608979499-94f24adacdb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZWxzaW5raSUyMGNhdGhlZHJhbCUyMHdpbnRlcnxlbnwxfHx8fDE3NjM3MTkzNTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="Helsinki Cathedral"
-            className="w-full h-full object-cover grayscale transition-transform duration-700 hover:scale-105"
-          />
-        </div>
-        <div className="flex flex-col justify-center p-4">
-          <span className="text-[#003580] font-sans text-xs tracking-widest block mb-2">
-            12月19日 • 市中心
-          </span>
-          <h3 className="text-4xl font-serif leading-tight mb-4">
-            Helsinki Cathedral{' '}
-            <span className="dual-title-zh text-base">赫爾辛基大教堂與市集</span>
-          </h3>
-          <p className="font-serif text-lg text-gray-700 leading-relaxed drop-cap">
-            <span className="drop-cap">從</span>
-            火車站出發，直奔赫爾辛基最著名的地標——白色大教堂。十二月時，元老院廣場上充滿了聖誕市集，空氣中瀰漫著熱紅酒
-            (Glögi) 的香氣，是體驗芬蘭節慶氣氛的最佳選擇。
-          </p>
-          <p className="text-sm font-sans mt-4">
-            周邊景點: 艾斯普拉納蒂公園、港口市集廣場、運動用品店。
-          </p>
-          <div className="mt-8 border-t pt-4">
-            <h4 className="text-lg font-bold font-sans mb-3 text-[#003580]">旅伴回憶</h4>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <span className="text-sm font-sans mr-2">推薦評分:</span>
-                <span
-                  className="display-rating"
-                  onClick={() => openViewingModal('helsinki-cathedral', '赫爾辛基大教堂')}
-                >
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: renderStars(getAverageRating('helsinki-cathedral', true)),
-                    }}
-                  />
-                </span>
-              </div>
-              <button
-                onClick={() => openRatingModal('helsinki-cathedral', '赫爾辛基大教堂')}
-                className="bg-[#003580] text-white text-xs font-sans px-4 py-2 rounded hover:bg-[#003580]/90 transition"
-              >
-                留下評分
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Rock Church */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 pt-10 border-t border-gray-100">
-        <div className="relative overflow-hidden h-[550px] md:h-auto">
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1713149019799-477ac308920f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZW1wcGVsaWF1a2lvJTIwY2h1cmNoJTIwaGVsc2lua2l8ZW58MXx8fHwxNzYzNzE5MzU3fDA&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="Temppeliaukio Church"
-            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-          />
-        </div>
-        <div className="flex flex-col justify-center p-4">
-          <span className="text-[#d4af37] font-sans text-sm tracking-widest block mb-2">
-            特別推薦 • 12月26日
-          </span>
-          <h3 className="text-6xl font-serif leading-tight mb-6">
-            Temppeliaukio Church <span className="dual-title-zh text-xl">岩石教堂</span>
-          </h3>
-          <p className="font-serif text-lg text-gray-700 leading-relaxed drop-cap">
-            <span className="drop-cap">我</span>
-            們參觀了這座不可思議的建築——一座直接在巨大岩石中鑿出的教堂。銅製圓頂與自然光的結合，創造出寧靜而又極具現代感的震撼美學。
-          </p>
-          <ul className="text-xs font-sans space-y-1 mt-4 text-gray-500">
-            <li>📍 交通方式: 搭乘電車 2/3 號或公車 14/18 號。</li>
-          </ul>
-          <div className="mt-8 border-t pt-4">
-            <h4 className="text-lg font-bold font-sans mb-3 text-[#003580]">旅伴回憶</h4>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <span className="text-sm font-sans mr-2">推薦評分:</span>
-                <span
-                  className="display-rating"
-                  onClick={() => openViewingModal('rock-church', '岩石教堂')}
-                >
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: renderStars(getAverageRating('rock-church', true)),
-                    }}
-                  />
-                </span>
-              </div>
-              <button
-                onClick={() => openRatingModal('rock-church', '岩石教堂')}
-                className="bg-[#003580] text-white text-xs font-sans px-4 py-2 rounded hover:bg-[#003580]/90 transition"
-              >
-                留下評分
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Day Trips */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 pt-10 border-t border-gray-100">
-        <div>
-          <span className="text-[#003580] font-sans text-xs tracking-widest block mb-1">
-            12月27日 • 塔林一日遊
-          </span>
-          <h4 className="text-4xl font-serif mb-4">
-            Across the Gulf of Finland <span className="dual-title-zh text-base">跨越芬蘭灣</span>
-          </h4>
-          <p className="font-serif text-lg text-gray-700 mb-6">
-            搭乘 Eckerö Line 郵輪橫越芬蘭灣前往愛沙尼亞的塔林。中世紀的城牆、聖奧拉夫教堂，以及童話般的舊城區，讓這趟一日遊充滿古老的歐洲魅力。
-          </p>
-          <div className="flex items-center space-x-4 border-t pt-4">
-            <span
-              className="display-rating"
-              onClick={() => openViewingModal('tallinn-daytrip', '塔林一日遊')}
-            >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: renderStars(getAverageRating('tallinn-daytrip', true)),
-                }}
-              />
+    <section id="city" className="py-24 bg-white relative z-10">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className="mb-16 border-b border-gray-200 pb-6">
+          <h2 className="text-6xl font-serif italic text-[#111] mb-3">
+            City Exploration
+            <span className="dual-title-zh text-lg uppercase text-gray-600 ml-4">
+              城市探索
             </span>
-            <button
-              onClick={() => openRatingModal('tallinn-daytrip', '塔林一日遊')}
-              className="bg-[#003580] text-white text-xs px-3 py-1 rounded transition"
-            >
-              留下評分
-            </button>
-          </div>
-        </div>
-        <div>
-          <span className="text-[#003580] font-sans text-xs tracking-widest block mb-1">
-            12月28日 • 波爾沃
-          </span>
-          <h4 className="text-4xl font-serif mb-4">
-            Porvoo Old Town <span className="dual-title-zh text-base">芬蘭最古老的城鎮</span>
-          </h4>
-          <p className="font-serif text-lg text-gray-700 mb-6">
-            芬蘭第二古老的城鎮，以河岸旁的紅色木造倉庫聞名。搭乘巴士前往，感受與赫爾辛基截然不同的古樸寧靜氛圍。
+          </h2>
+          <p className="font-serif text-lg text-gray-600 mt-4">
+            從赫爾辛基的設計之都到塔林的中世紀舊城，探索北歐與波羅的海的城市魅力
           </p>
-          <div className="flex items-center space-x-4 border-t pt-4">
-            <span
-              className="display-rating"
-              onClick={() => openViewingModal('porvoo-daytrip', '波爾沃一日遊')}
-            >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: renderStars(getAverageRating('porvoo-daytrip', true)),
-                }}
-              />
-            </span>
-            <button
-              onClick={() => openRatingModal('porvoo-daytrip', '波爾沃一日遊')}
-              className="bg-[#003580] text-white text-xs px-3 py-1 rounded transition"
-            >
-              留下評分
-            </button>
+        </div>
+
+        {/* 城市篩選器 */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-3">
+            {cityFilterOptions.map(option => (
+              <button
+                key={option.value}
+                onClick={() => setSelectedCity(option.value)}
+                className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                  selectedCity === option.value
+                    ? `${option.color} text-white border-transparent`
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </div>
+
+        {/* 類型篩選器 */}
+        <div className="mb-12 p-6 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 className="font-sans text-sm uppercase tracking-wider text-gray-600 mb-4">
+            篩選類型
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {typeFilterOptions.map(option => (
+              <button
+                key={option.value}
+                onClick={() => setTypeFilter(option.value)}
+                className={`px-4 py-2 rounded-lg border-2 transition-all font-sans ${
+                  typeFilter === option.value
+                    ? 'bg-[#003580] text-white border-transparent'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                <span className="mr-2">{option.emoji}</span>
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 景點列表 - 按日期分組 */}
+        {sortedDays.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="font-serif text-gray-500 text-xl">
+              沒有符合條件的景點
+            </p>
+          </div>
+        ) : (
+          sortedDays.map(dayNumber => {
+            const pois = groupedByDay[dayNumber];
+            const firstPoi = pois[0];
+
+            return (
+              <div key={dayNumber} className="mb-16">
+                {/* 日期標題 */}
+                <div className={`flex items-center mb-8 pb-4 border-l-4 pl-6 ${getCityBorderColor(firstPoi.city)}`}>
+                  <Calendar className="w-6 h-6 text-gray-600 mr-3" />
+                  <div>
+                    <h3 className="text-3xl font-serif">
+                      {firstPoi.date}
+                      <span className="text-base text-gray-500 ml-3 font-sans">
+                        Day {dayNumber}
+                      </span>
+                    </h3>
+                    <p className="text-sm text-gray-600 font-sans mt-1">
+                      {firstPoi.cityZh} • {pois.length} 個景點
+                    </p>
+                  </div>
+                </div>
+
+                {/* 景點卡片 */}
+                <div className="space-y-8">
+                  {pois.map(poi => {
+                    const avgRating = getAverageRating(poi.id, true);
+                    const comments = loadComments(poi.id);
+                    const imageUrl = cityImages[poi.id];
+
+                    return (
+                      <div
+                        key={poi.id}
+                        className={`group bg-white border-l-4 ${getCityBorderColor(poi.city)} shadow-sm hover:shadow-xl transition-all duration-300`}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
+                          {/* 左側圖片 */}
+                          <div className="md:col-span-2 relative overflow-hidden h-[300px] md:h-auto">
+                            <ImageWithFallback
+                              src={imageUrl}
+                              alt={poi.nameZh}
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                            />
+                            {/* 類型標籤 */}
+                            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-sans">
+                              {poi.typeZh}
+                            </div>
+                          </div>
+
+                          {/* 右側內容 */}
+                          <div className="md:col-span-3 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                              {/* 標題 */}
+                              <h4 className="text-3xl font-serif mb-2 leading-tight">
+                                {poi.name}
+                                <span className="dual-title-zh text-base ml-3">
+                                  {poi.nameZh}
+                                </span>
+                              </h4>
+
+                              {/* 副標題 */}
+                              <p className="text-sm text-[#003580] font-sans uppercase tracking-wider mb-4">
+                                {poi.subtitle}
+                              </p>
+
+                              {/* 標籤 */}
+                              {renderTags(poi.tags)}
+
+                              {/* 描述 */}
+                              <p className="font-serif text-gray-700 leading-relaxed mb-4">
+                                {poi.description}
+                              </p>
+
+                              {/* Tonttu 提示 */}
+                              {poi.tips && (
+                                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded">
+                                  <div className="flex items-start">
+                                    <Info className="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                                    <p className="text-sm font-serif text-blue-900 italic">
+                                      <span className="font-sans font-bold mr-1">Tonttu 秘訣:</span>
+                                      {poi.tips}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 位置資訊 */}
+                              {poi.location && (
+                                <div className="flex items-start text-xs text-gray-500 font-sans mb-4">
+                                  <MapPin className="w-3 h-3 mr-1 mt-0.5" />
+                                  <span>{poi.location}</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 評分區域 */}
+                            <div className="border-t pt-4 mt-4">
+                              <h5 className="text-sm font-sans font-bold text-[#003580] mb-3">
+                                旅伴回憶
+                              </h5>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                  <div className="flex items-center">
+                                    <span className="text-xs font-sans mr-2">推薦評分:</span>
+                                    <span
+                                      className="display-rating cursor-pointer text-lg"
+                                      onClick={() => openViewingModal(poi.id, poi.nameZh)}
+                                    >
+                                      <span
+                                        dangerouslySetInnerHTML={{
+                                          __html: renderStars(avgRating),
+                                        }}
+                                      />
+                                    </span>
+                                  </div>
+                                  {comments.length > 0 && (
+                                    <span className="text-xs text-gray-500 font-sans">
+                                      ({comments.length} 則評論)
+                                    </span>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => openRatingModal(poi.id, poi.nameZh)}
+                                  className="bg-[#003580] text-white text-xs font-sans px-4 py-2 rounded hover:bg-[#003580]/90 transition"
+                                >
+                                  留下評分
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })
+        )}
+
+        {/* 城市秘訣區塊 */}
+        {selectedCity !== 'all' && (
+          <div className="mt-16 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
+            <h3 className="text-2xl font-serif mb-6 flex items-center">
+              <span className="text-3xl mr-3">🎅</span>
+              Tonttu 的 {cityFilterOptions.find(c => c.value === selectedCity)?.label} 秘訣
+            </h3>
+            <ul className="space-y-3">
+              {cityTips
+                .find(ct => ct.city === selectedCity)
+                ?.tips.map((tip, idx) => (
+                  <li key={idx} className="flex items-start">
+                    <span className="text-blue-600 mr-3 text-lg">•</span>
+                    <span className="font-serif text-gray-800">{tip}</span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -22,6 +22,7 @@ const RatingModal = ({
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
   const [pendingSuccess, setPendingSuccess] = useState(false);
+  const MAX_COMMENT_LENGTH = 500;
 
   useEffect(() => {
     // Load last author from localStorage
@@ -52,7 +53,7 @@ const RatingModal = ({
     comments.unshift({
       id: Date.now(),
       author,
-      text: text || '未提供評論。',
+      text: text.trim(),
       rating,
       date: Date.now(),
     });
@@ -97,13 +98,21 @@ const RatingModal = ({
             className="w-full p-3 border border-gray-300 rounded text-sm font-sans"
           />
 
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="寫下您的評論與回憶..."
-            required
-            className="w-full p-3 border border-gray-300 rounded text-sm font-serif h-24"
-          />
+          <div className="relative">
+            <textarea
+              value={text}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_COMMENT_LENGTH) {
+                  setText(e.target.value);
+                }
+              }}
+              placeholder="分享您的美食體驗（選填，最多 500 字）"
+              className="w-full p-3 border border-gray-300 rounded text-sm font-serif h-24"
+            />
+            <div className="text-right text-xs text-gray-400 mt-1">
+              {text.length} / {MAX_COMMENT_LENGTH}
+            </div>
+          </div>
 
           <div className="flex flex-col items-start space-y-2">
             <span className="text-sm font-sans font-bold">星級評分:</span>
