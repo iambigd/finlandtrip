@@ -14,7 +14,7 @@ const SaunaSection = ({
   renderStars,
 }: SaunaSectionProps) => {
   return (
-    <section className="py-24 bg-[#fdfbf7] max-w-7xl mx-auto px-6 border-t border-gray-100 relative z-10">
+    <section id="sauna" className="py-24 bg-[#fdfbf7] max-w-7xl mx-auto px-6 border-t border-gray-100 relative z-10">
       {/* Löyly Sauna 設計亮點 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div className="relative h-96">

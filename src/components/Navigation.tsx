@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, ChevronDown } from 'lucide-react';
 
 interface NavigationProps {
@@ -35,38 +36,46 @@ const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpe
         >
           <button className="flex items-center hover:text-[#d4af37] transition">
             旅行規劃
-            <ChevronDown className={`w-3 h-3 ml-1 transition-transform ${isPlanningOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-300 ${isPlanningOpen ? 'rotate-180' : ''}`} />
           </button>
           
-          {/* 下拉選單 */}
-          {isPlanningOpen && (
-            <div className="absolute top-full left-0 pt-2 z-50">
-              <div className="w-48 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onOpenPreparation();
-                    setIsPlanningOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-amber-50 transition text-gray-700 hover:text-[#003580] border-b border-gray-100"
-                >
-                  <div className="font-sans text-xs uppercase tracking-wider">行前準備</div>
-                  <div className="text-[10px] text-gray-500 normal-case mt-0.5">Preparation</div>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onOpenTaxRefund();
-                    setIsPlanningOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-amber-50 transition text-gray-700 hover:text-[#003580]"
-                >
-                  <div className="font-sans text-xs uppercase tracking-wider">退稅指南</div>
-                  <div className="text-[10px] text-gray-500 normal-case mt-0.5">Tax Refund</div>
-                </button>
-              </div>
-            </div>
-          )}
+          {/* 下拉選單 - 使用 Motion 動畫 */}
+          <AnimatePresence>
+            {isPlanningOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="absolute top-full left-0 pt-2 z-50"
+              >
+                <div className="w-48 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onOpenPreparation();
+                      setIsPlanningOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-amber-50 transition text-gray-700 hover:text-[#003580] border-b border-gray-100"
+                  >
+                    <div className="font-sans text-xs uppercase tracking-wider">行前準備</div>
+                    <div className="text-[10px] text-gray-500 normal-case mt-0.5">Preparation</div>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onOpenTaxRefund();
+                      setIsPlanningOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-amber-50 transition text-gray-700 hover:text-[#003580]"
+                  >
+                    <div className="font-sans text-xs uppercase tracking-wider">退稅指南</div>
+                    <div className="text-[10px] text-gray-500 normal-case mt-0.5">Tax Refund</div>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <a href="#city" className="hover:text-[#d4af37] transition">

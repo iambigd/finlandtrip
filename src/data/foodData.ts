@@ -6,6 +6,8 @@ export interface FoodItem {
   tags: ('必吃' | '極地限定' | '中世紀' | '經典' | '伴手禮' | '季節限定')[];
   subtitle: string;
   description: string;
+  imgQuery?: string;
+  imgUrl?: string;
 }
 
 const createFoodItem = (
@@ -64,6 +66,7 @@ export const foodData: FoodItem[] = [
     subtitle: '芬蘭傳統黑麥餡餅',
     description: '芬蘭傳統黑麥皮餡餅，內餡為米飯或馬鈴薯泥，搭配蛋黃奶油醬 (Munavoi) 是最道地的吃法。',
     imgQuery: 'karjalanpiirakka finnish',
+    imgUrl: 'https://images.unsplash.com/photo-1763161693002-de3643c9cf2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrYXJqYWxhbnBpaXJha2thJTIwZmlubmlzaCUyMHBhc3RyeXxlbnwxfHx8fDE3NjU3MDM3NTV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
   },
   {
     id: 'korvapuusti',

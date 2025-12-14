@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { X, CheckCircle2 } from 'lucide-react';
 
 interface PreparationDrawerProps {
@@ -13,6 +14,19 @@ interface ChecklistItem {
 }
 
 const PreparationDrawer = ({ isOpen, onClose }: PreparationDrawerProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 檢測屏幕大小
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // 衣服清單
   const [clothingItems, setClothingItems] = useState<ChecklistItem[]>([
     { id: 'hat', label: '保暖毛帽 or 飛行帽', checked: false },
@@ -159,263 +173,271 @@ const PreparationDrawer = ({ isOpen, onClose }: PreparationDrawerProps) => {
   const dailyProgress = getProgress(dailyItems);
 
   return (
-    <>
-      {/* 背景遮罩 */}
-      <div
-        className="fixed inset-0 bg-black/50 z-50 transition-opacity duration-300"
-        onClick={onClose}
-      />
-
-      {/* 抽屜內容 - 桌面版左側滑入，手機版底部滑入 */}
-      <div
-        className={`
-          fixed z-50 bg-white shadow-2xl
-          md:top-0 md:left-0 md:h-full md:w-[600px]
-          md:animate-slide-in-left
-          bottom-0 left-0 right-0 h-[85vh] rounded-t-3xl
-          md:rounded-none
-          animate-slide-in-bottom
-          overflow-y-auto
-        `}
-      >
-        {/* 手機版下滑提示條 */}
-        <div className="md:hidden flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-        </div>
-
-        {/* 頂部標題 */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-20 shadow-md">
-          <div>
-            <h2 className="text-3xl font-serif text-[#003580]">
-              行前準備
-              <span className="text-sm font-sans text-gray-500 ml-3">Preparation</span>
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">極地旅行必備清單</p>
-          </div>
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* 背景遮罩 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="關閉"
+          />
+
+          {/* 抽屜內容 - 桌面版右側滑入，手機版底部滑入 */}
+          <motion.div
+            initial={isMobile ? { y: '100%' } : { x: '100%' }}
+            animate={isMobile ? { y: 0 } : { x: 0 }}
+            exit={isMobile ? { y: '100%' } : { x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className={`fixed z-50 bg-white shadow-2xl overflow-y-auto
+              ${isMobile 
+                ? 'bottom-0 left-0 right-0 h-[85vh] rounded-t-3xl' 
+                : 'right-0 top-0 h-full w-[600px] lg:w-[700px]'
+              }`}
           >
-            <X className="w-6 h-6 text-gray-600" />
-          </button>
-        </div>
-
-        {/* 內容區域 */}
-        <div className="p-6 space-y-6">
-          {/* 衣服準備 */}
-          <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-pink-50 to-rose-100 border-2 border-pink-200">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-200/30 rounded-full blur-3xl -z-0" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-serif flex items-center text-pink-900">
-                  <span className="text-3xl mr-3">🧥</span>
-                  衣服準備
-                </h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => toggleAllCategory('clothing')}
-                    className="text-xs bg-pink-600 text-white px-3 py-1.5 rounded-lg hover:bg-pink-700 transition"
-                  >
-                    {isAllChecked(clothingItems) ? '清除' : '全部確認'}
-                  </button>
-                </div>
-              </div>
-              
-              {/* 進度條 */}
-              <div className="mb-6">
-                <div className="flex justify-between text-xs text-pink-800 mb-2">
-                  <span>{clothingProgress.checked} / {clothingProgress.total} 已備妥</span>
-                  <span>{clothingProgress.percentage}%</span>
-                </div>
-                <div className="w-full bg-pink-200 rounded-full h-2">
-                  <div 
-                    className="bg-pink-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${clothingProgress.percentage}%` }}
-                  />
-                </div>
-              </div>
-
-              <ul className="grid md:grid-cols-2 gap-3 text-sm">
-                {clothingItems.map(item => (
-                  <li key={item.id}>
-                    <label className="flex items-start cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleItem('clothing', item.id)}
-                        className="mt-1 w-4 h-4 text-pink-600 border-pink-300 rounded focus:ring-pink-500 cursor-pointer"
-                      />
-                      <span className="ml-3 text-gray-800 group-hover:text-pink-900 transition">
-                        {item.label}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
+            {/* 手機版下滑提示條 */}
+            <div className="md:hidden flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
             </div>
-          </div>
 
-          {/* 需帶藥品 */}
-          <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-indigo-50 to-blue-100 border-2 border-indigo-200">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-200/30 rounded-full blur-3xl -z-0" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-serif flex items-center text-indigo-900">
-                  <span className="text-3xl mr-3">💊</span>
-                  需帶藥品
-                </h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => toggleAllCategory('medicine')}
-                    className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition"
-                  >
-                    {isAllChecked(medicineItems) ? '清除' : '全部確認'}
-                  </button>
-                </div>
-              </div>
-              
-              {/* 進度條 */}
-              <div className="mb-6">
-                <div className="flex justify-between text-xs text-indigo-800 mb-2">
-                  <span>{medicineProgress.checked} / {medicineProgress.total} 已備妥</span>
-                  <span>{medicineProgress.percentage}%</span>
-                </div>
-                <div className="w-full bg-indigo-200 rounded-full h-2">
-                  <div 
-                    className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${medicineProgress.percentage}%` }}
-                  />
-                </div>
-              </div>
-
-              <ul className="grid md:grid-cols-2 gap-3 text-sm">
-                {medicineItems.map(item => (
-                  <li key={item.id}>
-                    <label className="flex items-start cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleItem('medicine', item.id)}
-                        className="mt-1 w-4 h-4 text-indigo-600 border-indigo-300 rounded focus:ring-indigo-500 cursor-pointer"
-                      />
-                      <span className="ml-3 text-gray-800 group-hover:text-indigo-900 transition">
-                        {item.label}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* 日常用品攜帶 */}
-          <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-orange-50 to-amber-100 border-2 border-orange-200">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-200/30 rounded-full blur-3xl -z-0" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-serif flex items-center text-orange-900">
-                  <span className="text-3xl mr-3">🎒</span>
-                  日常用品攜帶
-                </h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => toggleAllCategory('daily')}
-                    className="text-xs bg-orange-600 text-white px-3 py-1.5 rounded-lg hover:bg-orange-700 transition"
-                  >
-                    {isAllChecked(dailyItems) ? '清除' : '全部確認'}
-                  </button>
-                </div>
-              </div>
-              
-              {/* 進度條 */}
-              <div className="mb-6">
-                <div className="flex justify-between text-xs text-orange-800 mb-2">
-                  <span>{dailyProgress.checked} / {dailyProgress.total} 已備妥</span>
-                  <span>{dailyProgress.percentage}%</span>
-                </div>
-                <div className="w-full bg-orange-200 rounded-full h-2">
-                  <div 
-                    className="bg-orange-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${dailyProgress.percentage}%` }}
-                  />
-                </div>
-              </div>
-
-              <ul className="grid md:grid-cols-2 gap-3 text-sm">
-                {dailyItems.map(item => (
-                  <li key={item.id}>
-                    <label className="flex items-start cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleItem('daily', item.id)}
-                        className="mt-1 w-4 h-4 text-orange-600 border-orange-300 rounded focus:ring-orange-500 cursor-pointer"
-                      />
-                      <span className="ml-3 text-gray-800 group-hover:text-orange-900 transition">
-                        {item.label}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Tonttu 提示 */}
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg">
-            <div className="flex items-start">
-              <div className="w-8 h-8 mr-3 flex-shrink-0">
-                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
-                  {/* Face */}
-                  <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
-                  {/* Eyes */}
-                  <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
-                  <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
-                  {/* Smile */}
-                  <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
-                  {/* Blush */}
-                  <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
-                  <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
-                  {/* Santa Hat */}
-                  <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
-                  <circle cx="50" cy="6" r="8" fill="#fff" />
-                  {/* Collar */}
-                  <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
-                </svg>
-              </div>
+            {/* 頂部標題 */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-20 shadow-md">
               <div>
-                <p className="font-sans font-bold text-blue-900 mb-2">Tonttu 的極地提示</p>
-                <ul className="text-sm text-blue-800 space-y-2">
-                  <li>• 芬蘭冬季氣溫可達 -20°C 至 -30°C，務必做好保暖準備</li>
-                  <li>• 洋蔥式穿法最實用：發熱衣 → 毛衣 → 羽絨外套</li>
-                  <li>• 暖暖包建議帶 20 個以上，黏貼式可貼在腳底</li>
-                  <li>• 凡士林可預防臉部和嘴唇乾裂，非常重要！</li>
-                </ul>
+                <h2 className="text-3xl font-serif text-[#003580]">
+                  行前準備
+                  <span className="text-sm font-sans text-gray-500 ml-3">Preparation</span>
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">極地旅行必備清單</p>
               </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="關閉"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
             </div>
-          </div>
 
-          {/* 總體進度 */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-300 rounded-2xl p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-8 h-8 text-green-600" />
-                <div>
-                  <h4 className="font-serif text-xl text-green-900">整體準備進度</h4>
-                  <p className="text-sm text-green-700">
-                    {clothingProgress.checked + medicineProgress.checked + dailyProgress.checked} / {clothingProgress.total + medicineProgress.total + dailyProgress.total} 項目已完成
-                  </p>
+            {/* 內容區域 */}
+            <div className="p-6 space-y-6">
+              {/* 衣服準備 */}
+              <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-pink-50 to-rose-100 border-2 border-pink-200">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-pink-200/30 rounded-full blur-3xl -z-0" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-serif flex items-center text-pink-900">
+                      <span className="text-3xl mr-3">🧥</span>
+                      衣服準備
+                    </h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleAllCategory('clothing')}
+                        className="text-xs bg-pink-600 text-white px-3 py-1.5 rounded-lg hover:bg-pink-700 transition"
+                      >
+                        {isAllChecked(clothingItems) ? '清除' : '全部確認'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* 進度條 */}
+                  <div className="mb-6">
+                    <div className="flex justify-between text-xs text-pink-800 mb-2">
+                      <span>{clothingProgress.checked} / {clothingProgress.total} 已備妥</span>
+                      <span>{clothingProgress.percentage}%</span>
+                    </div>
+                    <div className="w-full bg-pink-200 rounded-full h-2">
+                      <div 
+                        className="bg-pink-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${clothingProgress.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <ul className="grid md:grid-cols-2 gap-3 text-sm">
+                    {clothingItems.map(item => (
+                      <li key={item.id}>
+                        <label className="flex items-start cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={item.checked}
+                            onChange={() => toggleItem('clothing', item.id)}
+                            className="mt-1 w-4 h-4 text-pink-600 border-pink-300 rounded focus:ring-pink-500 cursor-pointer"
+                          />
+                          <span className="ml-3 text-gray-800 group-hover:text-pink-900 transition">
+                            {item.label}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-green-600">
-                {Math.round(((clothingProgress.checked + medicineProgress.checked + dailyProgress.checked) / (clothingProgress.total + medicineProgress.total + dailyProgress.total)) * 100)}%
+
+              {/* 需帶藥品 */}
+              <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-indigo-50 to-blue-100 border-2 border-indigo-200">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-200/30 rounded-full blur-3xl -z-0" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-serif flex items-center text-indigo-900">
+                      <span className="text-3xl mr-3">💊</span>
+                      需帶藥品
+                    </h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleAllCategory('medicine')}
+                        className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition"
+                      >
+                        {isAllChecked(medicineItems) ? '清除' : '全部確認'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* 進度條 */}
+                  <div className="mb-6">
+                    <div className="flex justify-between text-xs text-indigo-800 mb-2">
+                      <span>{medicineProgress.checked} / {medicineProgress.total} 已備妥</span>
+                      <span>{medicineProgress.percentage}%</span>
+                    </div>
+                    <div className="w-full bg-indigo-200 rounded-full h-2">
+                      <div 
+                        className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${medicineProgress.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <ul className="grid md:grid-cols-2 gap-3 text-sm">
+                    {medicineItems.map(item => (
+                      <li key={item.id}>
+                        <label className="flex items-start cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={item.checked}
+                            onChange={() => toggleItem('medicine', item.id)}
+                            className="mt-1 w-4 h-4 text-indigo-600 border-indigo-300 rounded focus:ring-indigo-500 cursor-pointer"
+                          />
+                          <span className="ml-3 text-gray-800 group-hover:text-indigo-900 transition">
+                            {item.label}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* 日常用品攜帶 */}
+              <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-orange-50 to-amber-100 border-2 border-orange-200">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-200/30 rounded-full blur-3xl -z-0" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-serif flex items-center text-orange-900">
+                      <span className="text-3xl mr-3">🎒</span>
+                      日常用品攜帶
+                    </h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleAllCategory('daily')}
+                        className="text-xs bg-orange-600 text-white px-3 py-1.5 rounded-lg hover:bg-orange-700 transition"
+                      >
+                        {isAllChecked(dailyItems) ? '清除' : '全部確認'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* 進度條 */}
+                  <div className="mb-6">
+                    <div className="flex justify-between text-xs text-orange-800 mb-2">
+                      <span>{dailyProgress.checked} / {dailyProgress.total} 已備妥</span>
+                      <span>{dailyProgress.percentage}%</span>
+                    </div>
+                    <div className="w-full bg-orange-200 rounded-full h-2">
+                      <div 
+                        className="bg-orange-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${dailyProgress.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <ul className="grid md:grid-cols-2 gap-3 text-sm">
+                    {dailyItems.map(item => (
+                      <li key={item.id}>
+                        <label className="flex items-start cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={item.checked}
+                            onChange={() => toggleItem('daily', item.id)}
+                            className="mt-1 w-4 h-4 text-orange-600 border-orange-300 rounded focus:ring-orange-500 cursor-pointer"
+                          />
+                          <span className="ml-3 text-gray-800 group-hover:text-orange-900 transition">
+                            {item.label}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Tonttu 提示 */}
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg">
+                <div className="flex items-start">
+                  <div className="w-8 h-8 mr-3 flex-shrink-0">
+                    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
+                      {/* Face */}
+                      <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
+                      {/* Eyes */}
+                      <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
+                      <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
+                      {/* Smile */}
+                      <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
+                      {/* Blush */}
+                      <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                      <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                      {/* Santa Hat */}
+                      <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
+                      <circle cx="50" cy="6" r="8" fill="#fff" />
+                      {/* Collar */}
+                      <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-sans font-bold text-blue-900 mb-2">Tonttu 的極地提示</p>
+                    <ul className="text-sm text-blue-800 space-y-2">
+                      <li>• 芬蘭冬季氣溫可達 -20°C 至 -30°C，務必做好保暖準備</li>
+                      <li>• 洋蔥式穿法最實用：發熱衣 → 毛衣 → 羽絨外套</li>
+                      <li>• 暖暖包建議帶 20 個以上，黏貼式可貼在腳底</li>
+                      <li>• 凡士林可預防臉部和嘴唇乾裂，非常重要！</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* 總體進度 */}
+              <div className="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-300 rounded-2xl p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-8 h-8 text-green-600" />
+                    <div>
+                      <h4 className="font-serif text-xl text-green-900">整體準備進度</h4>
+                      <p className="text-sm text-green-700">
+                        {clothingProgress.checked + medicineProgress.checked + dailyProgress.checked} / {clothingProgress.total + medicineProgress.total + dailyProgress.total} 項目已完成
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold text-green-600">
+                    {Math.round(((clothingProgress.checked + medicineProgress.checked + dailyProgress.checked) / (clothingProgress.total + medicineProgress.total + dailyProgress.total)) * 100)}%
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, Tag, MapPin, Info, Star } from 'lucide-react';
+import { Calendar, Tag, MapPin, Info, Star, ExternalLink } from 'lucide-react';
 import { CityPOI } from '../data/cityData';
 import { Comment } from '../App';
 
@@ -121,7 +121,26 @@ export const POICard: React.FC<POICardProps> = ({
               {poi.tips && (
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
                   <div className="flex items-start gap-2">
-                    <span className="text-xl">🧝</span>
+                    {/* Tonttu SVG Icon */}
+                    <div className="flex-shrink-0 w-6 h-6">
+                      <svg viewBox="0 0 100 100" className="w-full h-full">
+                        {/* Face */}
+                        <circle cx="50" cy="50" r="48" fill="#fff" stroke="#1a1a1a" strokeWidth="2" />
+                        {/* Eyes */}
+                        <circle cx="35" cy="48" r="4" fill="#1a1a1a" />
+                        <circle cx="65" cy="48" r="4" fill="#1a1a1a" />
+                        {/* Smile */}
+                        <path d="M45 58 Q50 63 55 58" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" fill="none" />
+                        {/* Blush */}
+                        <circle cx="30" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                        <circle cx="70" cy="58" r="6" fill="#ffadad" opacity="0.6" />
+                        {/* Santa Hat */}
+                        <path d="M10 38 Q50 -15 90 38" fill="#c0392b" />
+                        <circle cx="50" cy="6" r="8" fill="#fff" />
+                        {/* Collar */}
+                        <rect x="20" y="75" width="60" height="15" rx="5" fill="#003580" />
+                      </svg>
+                    </div>
                     <div className="flex-1">
                       <p className="text-amber-200/90 text-xs mb-1">Tonttu 小精靈說</p>
                       <p className="text-amber-100/80 text-sm">{poi.tips}</p>
@@ -132,10 +151,25 @@ export const POICard: React.FC<POICardProps> = ({
 
               {/* 位置 */}
               {poi.location && (
-                <div className="flex items-start gap-2 text-white/60 text-sm">
-                  <MapPin className="size-4 flex-shrink-0 mt-0.5" />
-                  <span>{poi.location}</span>
-                </div>
+                poi.googleMapsUrl ? (
+                  <a
+                    href={poi.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-start gap-2 text-blue-300/80 hover:text-blue-200 text-sm 
+                      transition-colors group cursor-pointer"
+                  >
+                    <MapPin className="size-4 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                    <span className="flex-1">{poi.location}</span>
+                    <ExternalLink className="size-3 flex-shrink-0 mt-1 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                ) : (
+                  <div className="flex items-start gap-2 text-white/60 text-sm">
+                    <MapPin className="size-4 flex-shrink-0 mt-0.5" />
+                    <span>{poi.location}</span>
+                  </div>
+                )
               )}
 
               {/* 标签云 */}

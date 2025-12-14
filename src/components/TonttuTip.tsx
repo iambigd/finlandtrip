@@ -16,18 +16,38 @@ const TonttuTip = () => {
   const [currentTip, setCurrentTip] = useState('');
 
   const tips: TipData = {
-    cover: { title: '歡迎!', text: '點擊「旅程地圖」按鈕，開始您的極地之旅。' },
+    cover: { 
+      title: '歡迎來到芬蘭！', 
+      text: '這是一份完整的 15 天極地旅遊日誌。向下滾動查看旅程地圖，或點擊導航查看行前準備！' 
+    },
+    map: {
+      title: '15天旅程地圖',
+      text: '點擊地圖上的城市圖標，快速跳轉到該城市的詳細景點介紹！赫爾辛基、塔林、波爾沃、芬蘭堡都在等您探索。'
+    },
     city: { 
       title: '城市探索', 
-      text: '使用篩選器尋找您感興趣的景點類型！每個城市都有獨特的魅力等您發現。Helsinki Card 可以免費使用大眾交通與參觀多數博物館，非常划算！' 
+      text: '使用城市篩選器切換不同城市！點擊景點卡片可查看更多資訊與評論。建議購買 Helsinki Card 免費使用交通與參觀博物館。' 
     },
-    arctic: { title: '極光提醒', text: '極光攝影：將相機（或手機）的曝光時間拉長，才能捕捉到極光！' },
-    food: { title: '購物筆記', text: 'Fazer 巧克力在機場免稅店通常最便宜，記得比價喔！' },
+    arctic: { 
+      title: '北極圈體驗', 
+      text: '極光攝影秘訣：將相機或手機的曝光時間拉長 3-5 秒，搭配腳架才能捕捉到絢麗的極光！記得多穿幾層保暖。' 
+    },
+    sauna: {
+      title: '桑拿文化',
+      text: '芬蘭桑拿是國寶級體驗！傳統做法是桑拿後直接跳進冰冷的湖水或海水，這是真正的「冰火兩重天」！'
+    },
+    food: { 
+      title: '美食與購物', 
+      text: 'Fazer 巧克力、Iittala 玻璃器皿、Marimekko 紡織品都是芬蘭必買！機場免稅店的 Fazer 巧克力通常最便宜。' 
+    },
     'rating-success': (name?: string) => ({
       title: '評分成功！',
-      text: `您對「${name}」的評分已成功記錄。`,
+      text: `您對「${name}」的評分已成功記錄，感謝您的分享！`,
     }),
-    default: { title: 'Tonttu 精靈', text: '想知道這個版塊的秘訣嗎？滾動頁面，我來幫您！' },
+    default: { 
+      title: 'Tonttu 精靈', 
+      text: '我是您的芬蘭旅遊小精靈！滾動頁面，我會在每個區塊給您實用的旅遊提示。' 
+    },
   };
 
   const setTip = (key: string, name?: string) => {
@@ -64,7 +84,7 @@ const TonttuTip = () => {
     setTip('cover');
 
     // Setup ScrollTriggers for different sections
-    const sections = ['city', 'arctic', 'food'];
+    const sections = ['map', 'city', 'arctic', 'sauna', 'food'];
 
     sections.forEach((id) => {
       ScrollTrigger.create({

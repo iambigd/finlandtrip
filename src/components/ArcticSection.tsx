@@ -26,7 +26,7 @@ const ArcticSection = ({
     pauseOnHover: true,
     responsive: [
       {
-        breakpoint: 768,
+        breakpoint: 1024,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
@@ -57,6 +57,13 @@ const ArcticSection = ({
       titleZh: '雪地騎馬',
       description: '在白雪覆蓋的森林中騎馬漫步，享受寧靜的北歐風光。',
       image: 'https://images.unsplash.com/photo-1737995719884-6005421a419d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3JzZSUyMHJpZGluZyUyMHNub3clMjB3aW50ZXIlMjBmaW5sYW5kfGVufDF8fHx8MTc2NTM3ODQwNnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    },
+    {
+      id: 'levi-nordic-odyssey',
+      title: 'Levi Nordic Odyssey',
+      titleZh: '極光團',
+      description: '跟隨專業嚮導深入列維郊外，在遠離光害的雪原上追逐神秘的北極光。',
+      image: 'https://images.unsplash.com/photo-1645443545274-2f79770772bc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aGVybiUyMGxpZ2h0cyUyMGF1cm9yYSUyMHRvdXIlMjBncm91cHxlbnwxfHx8fDE3NjU3MzEzOTl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     },
   ];
 
@@ -144,11 +151,11 @@ const ArcticSection = ({
             <p className="text-gray-500 text-sm mt-2">速度、毛皮與極光追逐。</p>
           </div>
           
-          <div className="max-w-6xl mx-auto px-16">
+          <div className="max-w-6xl mx-auto px-4 md:px-16">
             <Slider {...sliderSettings}>
               {arcticActivities.map((activity) => (
-                <div key={activity.id} className="px-2">
-                  <div className="bg-white/10 p-6 mx-2">
+                <div key={activity.id} className="px-1 md:px-2">
+                  <div className="bg-white/10 p-4 md:p-6 mx-1 md:mx-2">
                     <ImageWithFallback
                       src={activity.image}
                       alt={activity.title}
@@ -187,21 +194,21 @@ const ArcticSection = ({
         </div>
 
         {/* Aurora Banner */}
-        <div className="relative h-[600px] w-full mt-16 rounded-lg overflow-hidden">
+        <div className="relative h-[300px] md:h-[600px] w-full mt-16 rounded-lg overflow-hidden">
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1666003400042-a9e68d6bff0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aGVybiUyMGxpZ2h0cyUyMGF1cm9yYSUyMGJvcmVhbGlzfGVufDF8fHx8MTc2MzcxOTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080"
             alt="Aurora"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <div className="text-center">
-              <h3 className="text-8xl font-serif text-white mb-4 drop-shadow-lg aurora-glow">
+            <div className="text-center px-4">
+              <h3 className="text-5xl md:text-8xl font-serif text-white mb-2 md:mb-4 drop-shadow-lg aurora-glow">
                 AURORA
-                <span className="dual-title-zh text-xl text-gray-400 block tracking-widest">
+                <span className="dual-title-zh text-sm md:text-xl text-gray-400 block tracking-widest mt-1 md:mt-0">
                   北極光
                 </span>
               </h3>
-              <p className="font-sans tracking-widest uppercase text-white/80">
+              <p className="font-sans text-xs md:text-base tracking-widest uppercase text-white/80">
                 追逐極光，永生難忘。
               </p>
             </div>
