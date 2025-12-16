@@ -95,18 +95,7 @@ sudo mkdir -p /var/www/finlandtrip.missbanban
 sudo chown $USER:$USER /var/www/finlandtrip.missbanban
 ```
 
-### 2. 部署方式
-
-#### 方式 A：使用自動化腳本（推薦）
-
-1. 編輯 `deploy.sh`，填入伺服器資訊
-2. 執行部署：
-```bash
-chmod +x deploy.sh
-./deploy.sh
-```
-
-#### 方式 B：手動部署
+#### 手動部署
 
 ```bash
 # 1. 上傳程式碼到伺服器
