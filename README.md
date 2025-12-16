@@ -49,6 +49,9 @@ Client → Nginx (443/80) → Node.js/PM2 (3000) → React App
 server {
     server_name finlandtrip.missbanban.com;
 
+    access_log /var/log/nginx/finlandtrip.missbanban.com.log;
+    error_log  /var/log/nginx/finlandtrip.missbanban.com.error.log;
+
     # 反向代理到 Node.js (PM2)
     location / {
         proxy_pass http://localhost:3000;
@@ -60,6 +63,15 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
+        
+        # SPA 路由支援：所有請求都導向 index.html
+        proxy_intercept_errors on;
+        error_page 404 = @fallback;
+    }
+
+    location @fallback {
+        proxy_pass http://localhost:3000/index.html;
+        proxy_set_header Host $host;
     }
 
     listen 443 ssl;
