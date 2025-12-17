@@ -16,38 +16,41 @@ const ArcticSection = ({
   renderStars,
 }: ArcticSectionProps) => {
   const [ratings, setRatings] = useState<Record<string, string>>({});
+  const [slidesToShow, setSlidesToShow] = useState(3);
+
+  // 動態偵測螢幕寬度
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setSlidesToShow(1);
+      } else if (width < 1280) {
+        setSlidesToShow(2);
+      } else {
+        setSlidesToShow(3);
+      }
+    };
+
+    // 初始設定
+    handleResize();
+
+    // 監聽視窗大小變化
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Slider settings for react-slick
   const sliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: slidesToShow,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    arrows: slidesToShow > 1,
     centerMode: false,
     variableWidth: false,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          centerMode: false,
-        }
-      },
-      {
-        breakpoint: 900,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          arrows: false,
-          centerMode: false,
-          variableWidth: false,
-        }
-      }
-    ]
   };
 
   // Arctic activities data
