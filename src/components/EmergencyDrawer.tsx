@@ -177,11 +177,13 @@ const EmergencyDrawer = ({ isOpen, onClose }: EmergencyDrawerProps) => {
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="bg-white rounded-lg p-4">
-                    <p className="font-bold text-green-900 mb-1">24 小時緊急援助專線</p>
-                    <a href="tel:+442038710700" className="text-xl font-bold text-green-600 hover:underline">
-                      +44 203 871 0700
+                    <p className="font-bold text-green-900 mb-1">24 小時緊急醫療援助專線</p>
+                    <a href="tel:+3225525398" className="text-xl font-bold text-green-600 hover:underline">
+                      +32 2 552 5398
                     </a>
-                    <p className="text-xs text-gray-600 mt-1">醫療援助、道路救援、理賠諮詢</p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      If you require medical assistance, please call +32 2 552 5398. Our medical assistance professionals will find the best solution for your situation.
+                    </p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
                     <p className="font-bold text-green-900 mb-2">保單資訊</p>
