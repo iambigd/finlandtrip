@@ -515,6 +515,10 @@
     position: relative;
   }
 
+  .static {
+    position: static;
+  }
+
   .sticky {
     position: sticky;
   }
@@ -637,10 +641,6 @@
 
   .row-span-2 {
     grid-row: span 2 / span 2;
-  }
-
-  .mx-1 {
-    margin-inline: calc(var(--spacing) * 1);
   }
 
   .mx-auto {
@@ -2055,8 +2055,8 @@
     padding: calc(var(--spacing) * 8);
   }
 
-  .px-1 {
-    padding-inline: calc(var(--spacing) * 1);
+  .px-0 {
+    padding-inline: calc(var(--spacing) * 0);
   }
 
   .px-2 {
@@ -3212,12 +3212,6 @@
   @media (width >= 48rem) {
     .md\:col-span-7 {
       grid-column: span 7 / span 7;
-    }
-  }
-
-  @media (width >= 48rem) {
-    .md\:mx-2 {
-      margin-inline: calc(var(--spacing) * 2);
     }
   }
 

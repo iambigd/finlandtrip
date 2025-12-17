@@ -96,51 +96,61 @@ export const useWeatherData = () => {
 
         const weatherPromises = Object.entries(cityCoordinates).map(
           async ([cityName, { lat, lon, icon, colorClass }]) => {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`;
+            try {
+              const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`;
 
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to fetch weather for ${cityName}`);
+              const response = await fetch(url);
+              if (!response.ok) throw new Error(`Failed to fetch weather for ${cityName}`);
 
-            const data = await response.json();
-            const current = data.current;
+              const data = await response.json();
+              const current = data.current;
 
-            const weatherCode = current.weather_code;
-            const weatherInfo = weatherCodeMap[weatherCode] || { description: '未知', icon: '❓' };
+              const weatherCode = current.weather_code;
+              const weatherInfo = weatherCodeMap[weatherCode] || { description: '未知', icon: '❓' };
 
-            const cityZhMap: Record<string, string> = {
-              Helsinki: '赫爾辛基',
-              Rovaniemi: '羅瓦涅米',
-              Levi: '列維',
-              Inari: '伊納里',
-              Porvoo: '波爾沃',
-              Tallinn: '塔林',
-            };
+              const cityZhMap: Record<string, string> = {
+                Helsinki: '赫爾辛基',
+                Rovaniemi: '羅瓦涅米',
+                Levi: '列維',
+                Inari: '伊納里',
+                Porvoo: '波爾沃',
+                Tallinn: '塔林',
+              };
 
-            const weatherData: WeatherData = {
-              city: cityName,
-              cityZh: cityZhMap[cityName],
-              icon,
-              currentTemp: Math.round(current.temperature_2m),
-              feelsLike: Math.round(current.apparent_temperature),
-              weather: weatherInfo.description,
-              weatherIcon: weatherInfo.icon,
-              humidity: Math.round(current.relative_humidity_2m),
-              windSpeed: Math.round(current.wind_speed_10m * 10) / 10,
-              daylight: calculateDaylight(lat),
-              clothing: getClothingSuggestions(current.temperature_2m),
-              highlight: getHighlight(cityName, current.temperature_2m, weatherCode),
-              colorClass,
-            };
+              const weatherData: WeatherData = {
+                city: cityName,
+                cityZh: cityZhMap[cityName],
+                icon,
+                currentTemp: Math.round(current.temperature_2m),
+                feelsLike: Math.round(current.apparent_temperature),
+                weather: weatherInfo.description,
+                weatherIcon: weatherInfo.icon,
+                humidity: Math.round(current.relative_humidity_2m),
+                windSpeed: Math.round(current.wind_speed_10m * 10) / 10,
+                daylight: calculateDaylight(lat),
+                clothing: getClothingSuggestions(current.temperature_2m),
+                highlight: getHighlight(cityName, current.temperature_2m, weatherCode),
+                colorClass,
+              };
 
-            return weatherData;
+              return weatherData;
+            } catch (error) {
+              console.warn(`Failed to fetch weather for ${cityName}, skipping...`);
+              return null;
+            }
           }
         );
 
         const results = await Promise.all(weatherPromises);
-        setWeatherData(results);
+        const validResults = results.filter((r): r is WeatherData => r !== null);
+        
+        // 只有當至少有一個成功的結果時才更新數據
+        if (validResults.length > 0) {
+          setWeatherData(validResults);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : '獲取天氣數據失敗');
-        console.error('Weather fetch error:', err);
+        // 靜默處理錯誤，使用靜態數據作為 fallback
+        console.warn('Weather fetch error (using static data as fallback):', err);
       } finally {
         setLoading(false);
       }

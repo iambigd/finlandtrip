@@ -26,20 +26,25 @@ const ArcticSection = ({
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    centerMode: false,
+    variableWidth: false,
     responsive: [
       {
         breakpoint: 1280,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          centerMode: false,
         }
       },
       {
-        breakpoint: 768,
+        breakpoint: 900,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
           arrows: false,
+          centerMode: false,
+          variableWidth: false,
         }
       }
     ]
@@ -180,11 +185,11 @@ const ArcticSection = ({
             <p className="text-gray-500 text-sm mt-2">速度、毛皮與極光追逐。</p>
           </div>
           
-          <div className="max-w-6xl mx-auto px-4 md:px-16">
+          <div className="max-w-6xl mx-auto px-0 md:px-16">
             <Slider {...sliderSettings}>
               {arcticActivities.map((activity) => (
-                <div key={activity.id} className="px-1 md:px-2">
-                  <div className="bg-white/10 p-4 md:p-6 mx-1 md:mx-2">
+                <div key={activity.id} className="px-3 md:px-2">
+                  <div className="bg-white/10 p-4 md:p-6">
                     <ImageWithFallback
                       src={activity.image}
                       alt={activity.title}
