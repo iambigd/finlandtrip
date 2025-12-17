@@ -1,14 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, AlertCircle } from 'lucide-react';
+import { Menu, X, ChevronDown, AlertCircle, User, LogOut } from 'lucide-react';
 
 interface MobileMenuProps {
   onOpenPreparation: () => void;
   onOpenTaxRefund: () => void;
   onOpenEmergency: () => void;
   onOpenFood: () => void;
+  user: { nickname: string } | null;
+  onOpenAuth: () => void;
+  onLogout: () => void;
 }
 
-const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpenFood }: MobileMenuProps) => {
+const MobileMenu = ({ 
+  onOpenPreparation, 
+  onOpenTaxRefund, 
+  onOpenEmergency, 
+  onOpenFood,
+  user,
+  onOpenAuth,
+  onLogout,
+}: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlanningExpanded, setIsPlanningExpanded] = useState(false);
 
@@ -51,7 +62,22 @@ const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpe
         <div className="font-bold text-xs font-sans uppercase tracking-wider text-gray-800">
           Arctic Chronicle
         </div>
-        <div className="w-10" /> {/* Spacer for centering */}
+        {/* 用戶按鈕 */}
+        {user ? (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="p-2 bg-[#003580] text-white rounded-lg"
+          >
+            <User className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            onClick={onOpenAuth}
+            className="p-2 bg-[#003580] text-white rounded-lg"
+          >
+            <User className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* 側邊菜單 */}
@@ -77,10 +103,51 @@ const MobileMenu = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpe
                 </button>
               </div>
               <p className="text-sm text-blue-100">Arctic Chronicle: Finland 2025</p>
+              
+              {/* 用戶資訊 */}
+              {user && (
+                <div className="mt-4 pt-4 border-t border-blue-400/30">
+                  <div className="flex items-center gap-2 text-sm">
+                    <User className="w-4 h-4" />
+                    <span>{user.nickname}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 菜單項目 */}
             <nav className="p-4 space-y-2">
+              {/* 登入/登出按鈕 */}
+              {user ? (
+                <button
+                  onClick={() => {
+                    onLogout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-4 py-3 rounded-lg bg-red-50 hover:bg-red-100 transition text-red-600 flex items-center gap-2"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="font-sans text-sm font-bold">登出</div>
+                    <div className="text-xs">Logout</div>
+                  </div>
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    onOpenAuth();
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-4 py-3 rounded-lg bg-[#003580] hover:bg-[#003580]/90 transition text-white flex items-center gap-2"
+                >
+                  <User className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="font-sans text-sm font-bold">登入 / 註冊</div>
+                    <div className="text-xs text-blue-100">Login / Register</div>
+                  </div>
+                </button>
+              )}
+
               <a
                 href="#map"
                 onClick={() => handleLinkClick('#map')}

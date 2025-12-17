@@ -12,9 +12,9 @@ interface CityDrawerProps {
   cityNameZh: string;
   pois: CityPOI[];
   // 評論系統
-  loadComments: (poiId: string) => Comment[];
+  loadComments: (poiId: string) => Promise<Comment[]>;
   saveComments: (poiId: string, comments: Comment[]) => void;
-  getAverageRating: (poiId: string) => string;
+  getAverageRating: (poiId: string) => Promise<string>;
   onRatingClick: (poiId: string, poiName: string) => void;
 }
 

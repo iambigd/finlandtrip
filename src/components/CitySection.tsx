@@ -5,9 +5,9 @@ import { cityData, CityPOI } from '../data/cityData';
 import { Comment } from '../App';
 
 interface CitySectionProps {
-  loadComments: (poiId: string) => Comment[];
+  loadComments: (poiId: string) => Promise<Comment[]>;
   saveComments: (poiId: string, comments: Comment[]) => void;
-  getAverageRating: (poiId: string) => string;
+  getAverageRating: (poiId: string) => Promise<string>;
   openRatingModal: (poiId: string, poiName: string) => void;
 }
 

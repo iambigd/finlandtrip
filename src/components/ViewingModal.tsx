@@ -6,8 +6,8 @@ interface ViewingModalProps {
   onClose: () => void;
   poiId: string;
   poiName: string;
-  loadComments: (poiId: string) => Comment[];
-  getAverageRating: (poiId: string, round: boolean) => number;
+  loadComments: (poiId: string) => Promise<Comment[]>;
+  getAverageRating: (poiId: string, round: boolean) => Promise<string>;
   renderStars: (rating: number) => string;
 }
 
@@ -21,13 +21,28 @@ const ViewingModal = ({
   renderStars,
 }: ViewingModalProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
+  const [averageRating, setAverageRating] = useState('0.0');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
-      const loadedComments = loadComments(poiId).sort((a, b) => b.date - a.date);
-      setComments(loadedComments);
+      setLoading(true);
+      Promise.all([
+        loadComments(poiId),
+        getAverageRating(poiId, false)
+      ]).then(([loadedComments, avgRating]) => {
+        const sortedComments = loadedComments.sort((a, b) => b.date - a.date);
+        setComments(sortedComments);
+        setAverageRating(avgRating);
+        setLoading(false);
+      }).catch(error => {
+        console.error('Error loading viewing modal data:', error);
+        setComments([]);
+        setAverageRating('0.0');
+        setLoading(false);
+      });
     }
-  }, [isOpen, poiId, loadComments]);
+  }, [isOpen, poiId, loadComments, getAverageRating]);
 
   const formatDate = (timestamp: number): string => {
     return new Date(timestamp).toLocaleDateString('zh-TW', {
@@ -54,7 +69,7 @@ const ViewingModal = ({
         <p className="text-sm font-sans mb-6 text-gray-600">
           平均評分:{' '}
           <span className="text-[#d4af37] font-bold text-lg">
-            {getAverageRating(poiId, false)}
+            {averageRating}
           </span>{' '}
           / 5 ({comments.length} 則評論)
         </p>

@@ -1,10 +1,11 @@
+import { useState, useEffect } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Slider from 'react-slick';
 
 interface ArcticSectionProps {
   openRatingModal: (id: string, name: string) => void;
   openViewingModal: (id: string, name: string) => void;
-  getAverageRating: (poiId: string, round: boolean) => number;
+  getAverageRating: (poiId: string, round: boolean) => Promise<string>;
   renderStars: (rating: number) => string;
 }
 
@@ -14,25 +15,33 @@ const ArcticSection = ({
   getAverageRating,
   renderStars,
 }: ArcticSectionProps) => {
-  // Carousel settings
+  const [ratings, setRatings] = useState<Record<string, string>>({});
+
+  // Slider settings for react-slick
   const sliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 2000,
-    pauseOnHover: true,
+    autoplaySpeed: 3000,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        }
+      },
+      {
+        breakpoint: 640,
+        settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-        },
-      },
-    ],
+        }
+      }
+    ]
   };
 
   // Arctic activities data
@@ -49,7 +58,7 @@ const ArcticSection = ({
       title: 'Husky Sledding',
       titleZh: '哈士奇雪橇',
       description: '坐上哈士奇雪橇，感受在雪地森林中奔馳的快感。',
-      image: 'https://images.unsplash.com/photo-1672085270147-14cb8c790df7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxodXNreSUyMHNsZWRkaW5nJTIwd2ludGVyfGVufDF8fHx8MTc2MzcxOTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+      image: 'https://images.unsplash.com/photo-1672085270147-14cb8c790df7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxodXNreSUyMHNsZWRkaW5nJTIwd2ludGVyfGVufDF8fHx8MTY2MzcxOTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
     },
     {
       id: 'horse-riding',
@@ -59,13 +68,32 @@ const ArcticSection = ({
       image: 'https://images.unsplash.com/photo-1737995719884-6005421a419d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3JzZSUyMHJpZGluZyUyMHNub3clMjB3aW50ZXIlMjBmaW5sYW5kfGVufDF8fHx8MTc2NTM3ODQwNnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     },
     {
-      id: 'levi-nordic-odyssey',
+      id: 'aurora-hunting',
       title: 'Levi Nordic Odyssey',
-      titleZh: '極光團',
-      description: '跟隨專業嚮導深入列維郊外，在遠離光害的雪原上追逐神秘的北極光。',
-      image: 'https://images.unsplash.com/photo-1645443545274-2f79770772bc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aGVybiUyMGxpZ2h0cyUyMGF1cm9yYSUyMHRvdXIlMjBncm91cHxlbnwxfHx8fDE3NjU3MzEzOTl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      titleZh: '極光獵人',
+      description: '跟隨專業嚮導深入荒野，追尋北極光的蹤跡。極光下的雪地漫步，是一生難忘的體驗。',
+      image: 'https://images.unsplash.com/photo-1666003400042-a9e68d6bff0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aGVybiUyMGxpZ2h0cyUyMGF1cm9yYSUyMGJvcmVhbGlzfGVufDF8fHx8MTc2MzcxOTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
     },
   ];
+
+  // Load all ratings when component mounts
+  useEffect(() => {
+    const loadRatings = async () => {
+      const ids = ['rovaniemi-village', ...arcticActivities.map(a => a.id)];
+      const ratingsData: Record<string, string> = {};
+      
+      await Promise.all(
+        ids.map(async (id) => {
+          const rating = await getAverageRating(id, true);
+          ratingsData[id] = rating;
+        })
+      );
+      
+      setRatings(ratingsData);
+    };
+    
+    loadRatings();
+  }, [getAverageRating]);
 
   return (
     <section id="arctic" className="py-24 bg-[#1a202c] text-[#fdfbf7] relative overflow-hidden">
@@ -124,7 +152,7 @@ const ArcticSection = ({
               >
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: renderStars(getAverageRating('rovaniemi-village', true)),
+                    __html: renderStars(parseFloat(ratings['rovaniemi-village'] || '0')),
                   }}
                 />
               </span>
@@ -175,7 +203,7 @@ const ArcticSection = ({
                       >
                         <span
                           dangerouslySetInnerHTML={{
-                            __html: renderStars(getAverageRating(activity.id, true)),
+                            __html: renderStars(parseFloat(ratings[activity.id] || '0')),
                           }}
                         />
                       </span>

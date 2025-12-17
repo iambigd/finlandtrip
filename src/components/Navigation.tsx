@@ -1,16 +1,28 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AlertCircle, ChevronDown } from 'lucide-react';
+import { AlertCircle, ChevronDown, User, LogOut } from 'lucide-react';
 
 interface NavigationProps {
   onOpenPreparation: () => void;
   onOpenTaxRefund: () => void;
   onOpenEmergency: () => void;
   onOpenFood: () => void;
+  user: { nickname: string } | null;
+  onOpenAuth: () => void;
+  onLogout: () => void;
 }
 
-const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpenFood }: NavigationProps) => {
+const Navigation = ({ 
+  onOpenPreparation, 
+  onOpenTaxRefund, 
+  onOpenEmergency, 
+  onOpenFood,
+  user,
+  onOpenAuth,
+  onLogout,
+}: NavigationProps) => {
   const [isPlanningOpen, setIsPlanningOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   return (
     <nav className="hidden md:flex fixed top-0 left-0 w-full z-30 px-6 py-4 bg-[#fdfbf7]/95 backdrop-blur-sm shadow-sm justify-between items-center text-[#111] font-sans text-xs uppercase tracking-widest">
@@ -101,6 +113,53 @@ const Navigation = ({ onOpenPreparation, onOpenTaxRefund, onOpenEmergency, onOpe
           <AlertCircle className="w-4 h-4" />
           <span>緊急聯絡</span>
         </button>
+
+        {/* 用戶登入/登出 */}
+        {user ? (
+          <div
+            className="relative"
+            onMouseEnter={() => setIsUserMenuOpen(true)}
+            onMouseLeave={() => setIsUserMenuOpen(false)}
+          >
+            <button className="flex items-center gap-2 bg-[#003580] text-white px-4 py-2 rounded-lg hover:bg-[#003580]/90 transition">
+              <User className="w-4 h-4" />
+              <span className="normal-case">{user.nickname}</span>
+            </button>
+            
+            <AnimatePresence>
+              {isUserMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="absolute top-full right-0 pt-2 z-50"
+                >
+                  <div className="w-40 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
+                    <button
+                      onClick={() => {
+                        onLogout();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 hover:bg-red-50 transition text-gray-700 hover:text-red-600 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="font-sans text-xs uppercase tracking-wider">登出</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <button
+            onClick={onOpenAuth}
+            className="flex items-center gap-2 bg-[#003580] text-white px-4 py-2 rounded-lg hover:bg-[#003580]/90 transition"
+          >
+            <User className="w-4 h-4" />
+            <span>登入</span>
+          </button>
+        )}
       </div>
     </nav>
   );

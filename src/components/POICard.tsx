@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Tag, MapPin, Info, Star, ExternalLink } from 'lucide-react';
 import { CityPOI } from '../data/cityData';
@@ -7,8 +7,8 @@ import { Comment } from '../App';
 interface POICardProps {
   poi: CityPOI;
   showDate?: boolean;
-  loadComments: (poiId: string) => Comment[];
-  getAverageRating: (poiId: string) => string;
+  loadComments: (poiId: string) => Promise<Comment[]>;
+  getAverageRating: (poiId: string) => Promise<string>;
   onRatingClick: (poiId: string, poiName: string) => void;
 }
 
@@ -34,10 +34,33 @@ export const POICard: React.FC<POICardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [avgRating, setAvgRating] = useState('0.0');
+  const [loading, setLoading] = useState(true);
   
-  const comments = loadComments(poi.id);
-  const avgRating = getAverageRating(poi.id);
   const imageUrl = poi.image || getDefaultImage(poi.type);
+
+  // Load comments and rating when component mounts or poi changes
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [commentsData, ratingData] = await Promise.all([
+          loadComments(poi.id),
+          getAverageRating(poi.id)
+        ]);
+        setComments(commentsData);
+        setAvgRating(ratingData);
+      } catch (error) {
+        console.error('Error loading POI data:', error);
+        setComments([]);
+        setAvgRating('0.0');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [poi.id, loadComments, getAverageRating]);
 
   return (
     <motion.div

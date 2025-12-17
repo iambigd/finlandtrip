@@ -1,9 +1,10 @@
+import { useState, useEffect } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface SaunaSectionProps {
   openRatingModal: (id: string, name: string) => void;
   openViewingModal: (id: string, name: string) => void;
-  getAverageRating: (poiId: string, round: boolean) => number;
+  getAverageRating: (poiId: string, round: boolean) => Promise<string>;
   renderStars: (rating: number) => string;
 }
 
@@ -13,6 +14,17 @@ const SaunaSection = ({
   getAverageRating,
   renderStars,
 }: SaunaSectionProps) => {
+  const [rating, setRating] = useState('0');
+
+  // Load rating when component mounts
+  useEffect(() => {
+    const loadRating = async () => {
+      const ratingData = await getAverageRating('loeyly-sauna', true);
+      setRating(ratingData);
+    };
+    loadRating();
+  }, [getAverageRating]);
+
   return (
     <section id="sauna" className="py-24 bg-[#fdfbf7] max-w-7xl mx-auto px-6 border-t border-gray-100 relative z-10">
       {/* Löyly Sauna 設計亮點 */}
@@ -48,7 +60,7 @@ const SaunaSection = ({
                 >
                   <span
                     dangerouslySetInnerHTML={{
-                      __html: renderStars(getAverageRating('loeyly-sauna', true)),
+                      __html: renderStars(parseFloat(rating)),
                     }}
                   />
                 </span>

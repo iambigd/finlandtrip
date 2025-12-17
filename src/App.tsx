@@ -16,6 +16,9 @@ import PreparationDrawer from './components/PreparationDrawer';
 import TaxRefundDrawer from './components/TaxRefundDrawer';
 import EmergencyDrawer from './components/EmergencyDrawer';
 import FoodDrawer from './components/FoodDrawer';
+import AuthModal from './components/AuthModal';
+import { useAuth } from './hooks/useAuth';
+import { projectId, publicAnonKey } from './utils/supabase/info';
 
 export interface Comment {
   id: number;
@@ -34,8 +37,11 @@ export interface TipConfig {
 export type CityFilterType = 'all' | 'helsinki' | 'tallinn' | 'porvoo' | 'suomenlinna';
 
 function App() {
+  const { user, isAuthenticated, logout, refreshUser } = useAuth();
+  
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isViewingModalOpen, setIsViewingModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [currentPoiId, setCurrentPoiId] = useState<string | null>(null);
   const [currentPoiName, setCurrentPoiName] = useState('');
   const [activeMapLocation, setActiveMapLocation] = useState('helsinki');
@@ -68,18 +74,57 @@ function App() {
     setIsViewingModalOpen(false);
   };
 
+  const handleAuthSuccess = () => {
+    refreshUser();
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const handleLoginRequired = () => {
+    setIsRatingModalOpen(false);
+    setIsAuthModalOpen(true);
+  };
+
   // Utility Functions for Comments
-  const loadComments = (poiId: string): Comment[] => {
-    const stored = localStorage.getItem(`comments_${poiId}`);
-    return stored ? JSON.parse(stored) : [];
+  const loadComments = async (poiId: string): Promise<Comment[]> => {
+    try {
+      // Fetch from backend API
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-081848af/ratings/${poiId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error('Failed to load comments from API');
+        // Fallback to localStorage
+        const stored = localStorage.getItem(`comments_${poiId}`);
+        return stored ? JSON.parse(stored) : [];
+      }
+
+      const data = await response.json();
+      return data.ratings || [];
+    } catch (error) {
+      console.error('Error loading comments:', error);
+      // Fallback to localStorage
+      const stored = localStorage.getItem(`comments_${poiId}`);
+      return stored ? JSON.parse(stored) : [];
+    }
   };
 
   const saveComments = (poiId: string, comments: Comment[]) => {
+    // Only save to localStorage for backward compatibility
+    // Primary storage is now in the database via API
     localStorage.setItem(`comments_${poiId}`, JSON.stringify(comments));
   };
 
-  const getAverageRating = (poiId: string, round: boolean = false): string => {
-    const comments = loadComments(poiId);
+  const getAverageRating = async (poiId: string, round: boolean = false): Promise<string> => {
+    const comments = await loadComments(poiId);
     if (comments.length === 0) return '0.0';
     const total = comments.reduce((sum, c) => sum + c.rating, 0);
     const average = total / comments.length;
@@ -121,6 +166,9 @@ function App() {
         onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
         onOpenEmergency={() => setIsEmergencyOpen(true)}
         onOpenFood={() => setIsFoodOpen(true)}
+        user={user}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Mobile Navigation */}
@@ -129,6 +177,9 @@ function App() {
         onOpenTaxRefund={() => setIsTaxRefundOpen(true)}
         onOpenEmergency={() => setIsEmergencyOpen(true)}
         onOpenFood={() => setIsFoodOpen(true)}
+        user={user}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Mobile Tab Bar */}
@@ -213,6 +264,9 @@ function App() {
             poiName={currentPoiName}
             loadComments={loadComments}
             saveComments={saveComments}
+            userNickname={user?.nickname || null}
+            isAuthenticated={isAuthenticated}
+            onLoginRequired={handleLoginRequired}
           />
           
           <ViewingModal
@@ -226,6 +280,12 @@ function App() {
           />
         </>
       )}
+      
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

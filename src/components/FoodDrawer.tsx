@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Comment } from '../App';
@@ -11,9 +11,9 @@ interface FoodDrawerProps {
   onClose: () => void;
   openRatingModal: (id: string, name: string) => void;
   openViewingModal: (id: string, name: string) => void;
-  getAverageRating: (poiId: string, round: boolean) => number;
+  getAverageRating: (poiId: string, round: boolean) => Promise<string>;
   renderStars: (rating: number) => string;
-  loadComments: (poiId: string) => Comment[];
+  loadComments: (poiId: string) => Promise<Comment[]>;
 }
 
 type FoodCategory = '推薦' | '全部' | '極地特色' | '芬蘭經典' | '塔林美食' | '甜點' | '飲品' | '零食';
@@ -32,6 +32,31 @@ const FoodDrawer = ({
   const [expandedReviews, setExpandedReviews] = useState<Set<string>>(new Set());
   const [foodFilter, setFoodFilter] = useState<FoodCategory>('推薦');
   const [souvenirFilter, setSouvenirFilter] = useState<SouvenirCategory>('推薦');
+  const [itemData, setItemData] = useState<Record<string, { comments: Comment[]; rating: string }>>({});
+
+  // Load data for all items when drawer opens or filter changes
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const loadItemData = async () => {
+      const items = activeTab === 'food' ? getFilteredFood() : getFilteredSouvenirs();
+      const data: Record<string, { comments: Comment[]; rating: string }> = {};
+
+      await Promise.all(
+        items.map(async (item) => {
+          const [comments, rating] = await Promise.all([
+            loadComments(item.id),
+            getAverageRating(item.id, true)
+          ]);
+          data[item.id] = { comments, rating };
+        })
+      );
+
+      setItemData(data);
+    };
+
+    loadItemData();
+  }, [isOpen, activeTab, foodFilter, souvenirFilter, loadComments, getAverageRating]);
 
   const toggleReviews = (poiId: string) => {
     setExpandedReviews(prev => {
@@ -123,8 +148,7 @@ const FoodDrawer = ({
 
   // 美食卡片
   const renderFoodCard = (item: FoodItem) => {
-    const comments = loadComments(item.id);
-    const avgRating = getAverageRating(item.id, true);
+    const { comments, rating } = itemData[item.id] || { comments: [], rating: '0' };
     const isExpanded = expandedReviews.has(item.id);
 
     return (
@@ -149,7 +173,7 @@ const FoodDrawer = ({
           <span className="display-rating" onClick={() => openViewingModal(item.id, item.nameZh)}>
             <span
               dangerouslySetInnerHTML={{
-                __html: renderStars(avgRating),
+                __html: renderStars(Number(rating)),
               }}
             />
             {comments.length > 0 && (
@@ -218,8 +242,7 @@ const FoodDrawer = ({
 
   // 伴手禮大卡片（熱門推薦）
   const renderSouvenirBigCard = (item: SouvenirItem) => {
-    const comments = loadComments(item.id);
-    const avgRating = getAverageRating(item.id, true);
+    const { comments, rating } = itemData[item.id] || { comments: [], rating: '0' };
     const isExpanded = expandedReviews.has(item.id);
 
     return (
@@ -244,7 +267,7 @@ const FoodDrawer = ({
           <span className="display-rating" onClick={() => openViewingModal(item.id, item.nameZh)}>
             <span
               dangerouslySetInnerHTML={{
-                __html: renderStars(avgRating),
+                __html: renderStars(Number(rating)),
               }}
             />
             {comments.length > 0 && (
@@ -313,8 +336,7 @@ const FoodDrawer = ({
 
   // 伴手禮小卡片（完整列表）
   const renderSouvenirSmallCard = (item: SouvenirItem) => {
-    const comments = loadComments(item.id);
-    const avgRating = getAverageRating(item.id, true);
+    const { comments, rating } = itemData[item.id] || { comments: [], rating: '0' };
 
     return (
       <div key={item.id} className="bg-white p-4 rounded-lg shadow-md border-t-4 border-[#d4af37]">
@@ -335,7 +357,7 @@ const FoodDrawer = ({
           <span className="display-rating text-sm" onClick={() => openViewingModal(item.id, item.nameZh)}>
             <span
               dangerouslySetInnerHTML={{
-                __html: renderStars(avgRating),
+                __html: renderStars(Number(rating)),
               }}
             />
           </span>
