@@ -467,28 +467,357 @@ module.exports = {
 
 ---
 
-## 🔮 未來擴充規劃
+## 🚀 Supabase 後端整合
 
-### 後端 API (計畫中)
+### 架構概述
+
+專案已整合 **Supabase** 作為後端服務，提供：
+- 🔐 使用者認證系統
+- 💾 雲端評論與評分系統
+- 📊 跨裝置資料同步
+- 🔒 JWT Token 安全驗證
+
+### 技術棧
+
 ```
-/api/pois          # 景點資料 API
-/api/comments      # 評論系統 API
-/api/users         # 使用者系統
-/api/favorites     # 收藏功能
+Supabase
+├── Auth (內建認證系統)
+├── Edge Functions (Deno 運行時)
+├── PostgreSQL Database (關聯式資料庫)
+└── Key-Value Store (自定義 KV 儲存)
 ```
 
-### 資料庫整合
-- PostgreSQL / MongoDB
-- 使用者認證系統
-- 雲端評論同步
+### 資料庫結構
 
-### 新功能
-- [ ] 使用者登入系統
-- [ ] 社群分享功能
-- [ ] 行程規劃工具
-- [ ] 多語言支援 (EN/JP)
-- [ ] 離線 PWA 支援
-- [ ] Google Analytics 整合
+#### kv_store_081848af 表
+```sql
+CREATE TABLE kv_store_081848af (
+  key TEXT NOT NULL PRIMARY KEY,
+  value JSONB NOT NULL
+);
+```
+
+**儲存的資料類型：**
+
+1. **使用者資料** (`profile:{userId}`)
+```json
+{
+  "userId": "uuid",
+  "email": "user@example.com",
+  "nickname": "旅行者",
+  "createdAt": "2025-12-16T10:00:00Z"
+}
+```
+
+2. **評分資料** (`ratings:{poiId}`)
+```json
+[
+  {
+    "id": 1734345600000,
+    "userId": "uuid",
+    "poiId": "helsinki-cathedral",
+    "author": "旅行者",
+    "rating": 5,
+    "text": "非常漂亮的教堂！",
+    "date": 1734345600000
+  }
+]
+```
+
+### API 端點
+
+**Base URL**: `https://lylsrqsrzxoijwrhzcka.supabase.co/functions/v1/make-server-081848af`
+
+#### 認證相關
+
+##### 1. 使用者註冊
+```http
+POST /auth/register
+Content-Type: application/json
+Authorization: Bearer {publicAnonKey}
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "nickname": "旅行者"
+}
+```
+
+**回應：**
+```json
+{
+  "message": "Registration successful",
+  "userId": "uuid"
+}
+```
+
+##### 2. 使用者登入
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**回應：**
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "nickname": "旅行者"
+  }
+}
+```
+
+##### 3. 取得當前使用者資訊
+```http
+GET /auth/me
+Authorization: Bearer {accessToken}
+```
+
+**回應：**
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "nickname": "旅行者"
+  }
+}
+```
+
+#### 評分相關
+
+##### 4. 新增評分
+```http
+POST /ratings
+Content-Type: application/json
+Authorization: Bearer {accessToken}
+
+{
+  "poiId": "helsinki-cathedral",
+  "rating": 5,
+  "text": "非常漂亮的教堂！"
+}
+```
+
+**回應：**
+```json
+{
+  "message": "Rating saved successfully",
+  "rating": {
+    "id": 1734345600000,
+    "userId": "uuid",
+    "poiId": "helsinki-cathedral",
+    "author": "旅行者",
+    "rating": 5,
+    "text": "非常漂亮的教堂！",
+    "date": 1734345600000
+  }
+}
+```
+
+##### 5. 取得景點評分
+```http
+GET /ratings/{poiId}
+```
+
+**回應：**
+```json
+{
+  "ratings": [
+    {
+      "id": 1734345600000,
+      "userId": "uuid",
+      "poiId": "helsinki-cathedral",
+      "author": "旅行者",
+      "rating": 5,
+      "text": "非常漂亮的教堂！",
+      "date": 1734345600000
+    }
+  ]
+}
+```
+
+### 前端整合
+
+#### 認證 Hook (useAuth)
+
+```typescript
+// src/hooks/useAuth.ts
+const { user, loading, login, register, logout } = useAuth();
+
+// 檢查是否登入
+if (user) {
+  console.log(`歡迎 ${user.nickname}`);
+}
+```
+
+#### 認證 Modal (AuthModal)
+
+```typescript
+<AuthModal
+  isOpen={isAuthModalOpen}
+  onClose={() => setIsAuthModalOpen(false)}
+  onAuthSuccess={() => {
+    // 登入成功後的處理
+    setIsAuthModalOpen(false);
+  }}
+/>
+```
+
+#### 評分功能 (RatingModal)
+
+```typescript
+<RatingModal
+  isOpen={isRatingModalOpen}
+  onClose={() => setIsRatingModalOpen(false)}
+  poiId="helsinki-cathedral"
+  poiName="赫爾辛基大教堂"
+  userNickname={user?.nickname}
+  isAuthenticated={!!user}
+  onLoginRequired={() => setIsAuthModalOpen(true)}
+/>
+```
+
+### 資料流程
+
+#### 使用者註冊流程
+```
+1. 使用者填寫 Email + Password + Nickname
+   ↓
+2. 前端發送 POST /auth/register
+   ↓
+3. Supabase Auth 建立帳號
+   ↓
+4. KV Store 儲存使用者資料
+   ↓
+5. 返回 userId
+```
+
+#### 使用者登入流程
+```
+1. 使用者輸入 Email + Password
+   ↓
+2. 前端發送 POST /auth/login
+   ↓
+3. Supabase Auth 驗證身份
+   ↓
+4. 返回 accessToken + user info
+   ↓
+5. 儲存至 localStorage
+   ↓
+6. 更新前端 user state
+```
+
+#### 評分流程
+```
+1. 使用者點擊「評分」
+   ↓
+2. 檢查是否登入（未登入則顯示登入視窗）
+   ↓
+3. 填寫評分與評論
+   ↓
+4. 發送 POST /ratings (含 accessToken)
+   ↓
+5. 後端驗證 Token
+   ↓
+6. 儲存至 KV Store
+   ↓
+7. 返回成功訊息
+   ↓
+8. 前端更新評分列表
+```
+
+#### 查看評論流程
+```
+1. 使用者點擊「查看評論」
+   ↓
+2. 發送 GET /ratings/{poiId}
+   ↓
+3. 從 KV Store 讀取資料
+   ↓
+4. 返回評論列表
+   ↓
+5. 前端顯示所有評論
+```
+
+### 安全性設計
+
+#### JWT Token 驗證
+- 所有需要認證的 API 都需要 `Authorization: Bearer {token}`
+- Token 由 Supabase Auth 簽發
+- 過期時間由 Supabase 管理
+
+#### 資料隔離
+- 使用者只能看到自己的 Profile
+- 評論資料包含 `userId` 追蹤作者
+- 防止跨使用者資料洩漏
+
+#### CORS 設定
+```typescript
+cors({
+  origin: "*",
+  allowHeaders: ["Content-Type", "Authorization"],
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+})
+```
+
+### 環境變數
+
+#### Supabase Edge Function
+```bash
+SUPABASE_URL=https://lylsrqsrzxoijwrhzcka.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=***
+```
+
+#### 前端配置
+```typescript
+// src/utils/supabase/info.tsx
+export const projectId = "lylsrqsrzxoijwrhzcka"
+export const publicAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### LocalStorage vs Supabase
+
+| 功能 | LocalStorage | Supabase |
+|------|-------------|----------|
+| 資料共享 | ❌ 僅限單一瀏覽器 | ✅ 所有使用者共享 |
+| 跨裝置同步 | ❌ 無法同步 | ✅ 雲端同步 |
+| 使用者認證 | ❌ 無 | ✅ JWT Token |
+| 資料持久化 | ⚠️ 清除快取會遺失 | ✅ 永久儲存 |
+| 即時更新 | ❌ 需重新整理 | ✅ API 即時讀取 |
+
+### 優勢
+
+✅ **真正的社群功能**：所有使用者的評論都能互相看到  
+✅ **跨裝置體驗**：手機評分，電腦也能看到  
+✅ **資料安全**：使用者認證 + JWT Token  
+✅ **可擴展性**：輕鬆新增收藏、按讚等功能  
+✅ **零維護成本**：Supabase 全託管服務  
+
+### Supabase Dashboard
+
+- **專案 ID**: `lylsrqsrzxoijwrhzcka`
+- **資料庫**: https://supabase.com/dashboard/project/lylsrqsrzxoijwrhzcka/database/tables
+- **Edge Functions**: https://supabase.com/dashboard/project/lylsrqsrzxoijwrhzcka/functions
+- **Authentication**: https://supabase.com/dashboard/project/lylsrqsrzxoijwrhzcka/auth/users
+
+### 未來擴充
+
+- [ ] Email 驗證功能
+- [ ] 密碼重設功能
+- [ ] OAuth 登入 (Google, Facebook)
+- [ ] 評論按讚功能
+- [ ] 使用者收藏景點
+- [ ] 管理員審核系統
+- [ ] 圖片上傳功能
+- [ ] 即時通知系統
 
 ---
 
